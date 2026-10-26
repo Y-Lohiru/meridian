@@ -2,36 +2,40 @@
 import React, { useEffect } from 'react'
 import {createClient} from '../../utils/supabase/client'
 import { redirect } from 'next/dist/client/components/navigation'
+import fetchUser from '../../utils/auth'
+import checkUser from '../../utils/auth';
+
+// interface Profile {
+//     id:string;
+//     fname: string;
+//     lname: string;
+//     email: string;
+//     address: string;
+//     contactno  : string;
+//     role: string;
+//     }
 
 const page = () => {
-    const supabase = createClient()
     const fetchUser = async () => {
-    const { data: { user }, error } = await supabase.auth.getUser()
-
-if ( user) {
-  console.log("User is  logged in")
-  // return redirect(`/profile/${user?.id}`)
-} else {
-  console.log("User is not logged in")
-    window.location.href = '/login'
-}
+        checkUser().then((user) => {
+            if (user.data.user) {
+                console.log(user.data.user)
+            } else {
+                console.log("User is not logged in")
+                return redirect('/login')
+            }
+        })
     }
-
+        
     useEffect(() => {
         fetchUser()
     }, [])
-
-    const fetchUserDetails = async () => {
-        const {data,error} = await supabase.from('users').select('*').eq('id', supabase.auth.user()?.id)
-        if (error) {
-            console.error('Error fetching user details:', error);
-        } else {
-            console.log('User details:', data);
-        }
+        
   return (
 
     <div>
-      
+        <h1>Profile Page</h1>
+        <a href="/track/sjdhjkh">Edit Profile</a>
     </div>
   )
 }
