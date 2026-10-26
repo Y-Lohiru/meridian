@@ -1,4 +1,4 @@
-import Hero from "@/components/home screen/hero";
+// import Hero from "@/components/home screen/hero";
 import Footer from "@/components/UI/footer";
 import Header from "@/components/UI/header";
 
@@ -7,7 +7,7 @@ export default function HomePage() {
     <div>
       <Header />
       <main>
-      <Hero />
+      {/* <Hero /> */}
       </main>
       <Footer />
     </div>
