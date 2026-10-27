@@ -1,7 +1,10 @@
-import LogoText from "../UI/logoText";
+import LogoText from "../ui/logoText";
 import Link from "next/link";
+import ProfileIcon from "./profileIcon";
 
 export default function SideBar() {
+
+
   return (
     <div className="bg-brand w-56 min-h-dvh">
       <LogoText />
@@ -21,6 +24,7 @@ export default function SideBar() {
           <li>Settings</li>
         </ul>
       </div>
+      <ProfileIcon />
     </div>
   );
 }
