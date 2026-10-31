@@ -5,6 +5,7 @@ export default function LowStockList() {
     { image: "/a.png", name: "Grand Piano", remaining: "3" },
     { image: "/b.png", name: "The grand bed", remaining: "1" },
     { image: "/c.png", name: "Table premium", remaining: "5" },
+    { image: "/d.png", name: "Table premium", remaining: "5" }
   ];
 
   return (
@@ -22,7 +23,7 @@ export default function LowStockList() {
                     <span>{item.remaining}</span>
                 </div>
                 
-                <button className="border text-brand rounded ">Restock</button>
+                <button className="border w-20 h-12 text-brand rounded ">Restock</button>
             </div>
         ))}
       </div>

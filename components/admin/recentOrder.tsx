@@ -44,7 +44,7 @@ export default function RecentOrder() {
   const headers = ["ORDER", "CUSTOMER", "ITEM", "DATE", "STATUS", "TOTAL"];
 
   return (
-    <div>
+    <div className="bg-on-brand p-3 border rounded-2xl">
       <span className="text-brand font-semibold">Recent Orders</span>
       <div>
         <table className="w-full">
