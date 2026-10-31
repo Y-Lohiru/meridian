@@ -1,12 +1,19 @@
 import Image from "next/image";
+import { getLowStockProducts } from "@/app/utils/queries/admin";
 
-export default function LowStockList() {
-  const lowStock = [
-    { image: "/a.png", name: "Grand Piano", remaining: "3" },
-    { image: "/b.png", name: "The grand bed", remaining: "1" },
-    { image: "/c.png", name: "Table premium", remaining: "5" },
-    { image: "/d.png", name: "Table premium", remaining: "5" }
-  ];
+
+
+export default async function LowStockList() {  
+  
+const lowStocks = await getLowStockProducts();
+
+  // const lowStock = [
+  //   { image: "/a.png", name: "Grand Piano", remaining: "3" },
+  //   { image: "/b.png", name: "The grand bed", remaining: "1" },
+  //   { image: "/c.png", name: "Table premium", remaining: "5" },
+  //   { image: "/d.png", name: "Table premium", remaining: "5" }
+  // ];
+
 
   return (
     <div className="m-2.5">
@@ -14,7 +21,7 @@ export default function LowStockList() {
         <span>Low Stock</span>
         <hr />
 
-        {lowStock.map((item) => (
+        {lowStocks.map((item) => (
             <div key={item.name} className="flex flex-row gap-6 m-1.5"> 
                 <Image src={item.image} alt="product image" width={50} height={80}></Image>
                 

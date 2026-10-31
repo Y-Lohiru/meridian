@@ -3,7 +3,7 @@ import AdminHeader from "@/components/admin/header";
 import LowStockList from "@/components/admin/lowStockList";
 import RecentOrder from "@/components/admin/recentOrder";
 import SummarySection from "@/components/admin/summary";
-
+import { Suspense } from "react";
 export default function AdminDashboard() {
   return (
     <div>
@@ -14,7 +14,9 @@ export default function AdminDashboard() {
           <Graph />
         </div>
 
-        <LowStockList />
+        <Suspense fallback={<div>Loading list</div>}>
+          <LowStockList />
+        </Suspense>
       </div>
       <RecentOrder />
     </div>

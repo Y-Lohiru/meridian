@@ -8,27 +8,27 @@ import { BsBoxSeam } from "react-icons/bs";
 
 export default function SideBar() {
   return (
-    <div className="flex flex-col sticky top-0 shrink-0 bg-brand w-56 h-dvh pl-3">
+    <aside className="flex flex-col sticky top-0 shrink-0 bg-brand w-56 h-dvh pl-3">
       <LogoText />
 
       <div className="ml-1.5 text-white font-semibold font-display">
-        <span>Store</span>
+        <span className="block px-3 mt-8 mb-2 font-medium uppercase">Store</span>
         <ul className="flex flex-col gap-3">
           <li>
-            <Link href={"/admin"} className="flex hover:bg-white/20">
+            <Link href={"/admin"} className="flex items-center rounded-md gap-3 hover:bg-white/20">
               <MdOutlineDashboard />
               Dashboard
             </Link>
           </li>
           <li>
-            <Link href={"/admin/orders"} className="flex hover:bg-white/20">
+            <Link href={"/admin/orders"} className="flex items-center rounded-md gap-3 hover:bg-white/20">
               {" "}
               <IoBagOutline />
               Orders
             </Link>
           </li>
           <li>
-            <Link href={"/admin/products"} className="flex hover:bg-white/20">
+            <Link href={"/admin/products"} className="flex items-center rounded-md gap-3 hover:bg-white/20">
               <BsBoxSeam />
               Products
             </Link>
@@ -46,9 +46,12 @@ export default function SideBar() {
           <li>Settings</li>
         </ul>
       </div>
+
       <div className="mt-auto">
         <ProfileIcon />
       </div>
-    </div>
+
+
+    </aside>
   );
 }

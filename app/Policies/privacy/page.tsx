@@ -5,7 +5,9 @@ export default function PrivacyPolicy() {
     return (
         <div>
             <Header />
-            <main></main>
+            <main>
+                <h2>Privacy Policy</h2>
+            </main>
             <Footer />
         </div>
     )

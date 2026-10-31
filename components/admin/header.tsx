@@ -1,5 +1,6 @@
 "use client"
 import { useState, useEffect } from "react";
+import { addProduct } from "@/app/utils/queries/admin";
 
 export default function AdminHeader() {
 

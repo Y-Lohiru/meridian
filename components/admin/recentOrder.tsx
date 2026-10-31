@@ -1,4 +1,8 @@
+import { getRecentOrders } from "@/app/utils/queries/admin";
+
 export default function RecentOrder() {
+  const orders = getRecentOrders();
+  
   const order = [
     {
       id: "#M-10484",
