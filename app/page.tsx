@@ -1,6 +1,6 @@
 // import Hero from "@/components/home screen/hero";
-import Footer from "@/components/UI/footer";
-import Header from "@/components/UI/header";
+import Footer from "@/components/ui/footer";
+import Header from "@/components/ui/header";
 
 export default function HomePage() {
   return (
@@ -8,6 +8,8 @@ export default function HomePage() {
       <Header />
       <main>
       {/* <Hero /> */}
+
+      <p>Helooo</p>
       </main>
       <Footer />
     </div>
