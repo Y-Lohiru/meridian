@@ -1,15 +1,11 @@
 "use client"
 import { useState, useEffect } from "react";
 import { addProduct } from "@/app/utils/queries/admin";
+import Link from "next/link";
 
 export default function AdminHeader() {
 
   const [days, setDays] = useState(0);
-
-  function addProduct() {
-
-  }
-
 
   return (
     <div className="flex flex-row justify-between">
@@ -25,7 +21,7 @@ export default function AdminHeader() {
             <option>Last 30 days</option>
         </select>
 
-        <button onClick={addProduct} className="bg-brand rounded border h-9 w-40 text-white">+ Add product</button>
+        <Link href={"/admin/products/new"} className="bg-brand rounded border h-9 w-40 text-white p-1.5 items-center">+ Add product</Link>
       </div>
     </div>
   );

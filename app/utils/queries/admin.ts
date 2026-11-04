@@ -3,10 +3,10 @@
 import { createClient } from "@supabase/supabase-js";
 
 interface RecentOrder {
-  id: number;
+  orderId: string;
   customerName: string;
   itemName: string;
-  createdAt: Date;
+  createdAt: string;
   status: string;
   total: number;
 }
@@ -26,13 +26,42 @@ function getSupabase() {
 }
 
 // Function to get the recent order to show in the dashboard
-function getRecentOrders() {}
+async function getRecentOrders(): Promise<RecentOrder[]> {
+  const supabase = getSupabase();
+
+  const { data, error } = await supabase
+    .from("orders")
+    .select(
+      "order_id, created_at, status, total, users(fname, lname), order_product(product(productName))",
+    )
+    .order("created_at", { ascending: false })
+    .limit(5);
+
+  if (error) {
+    console.error(error);
+    return [];
+  }
+
+  return data.map((order) => {
+    const user = order.users as unknown as { fname: string; lname: string } | null;
+    const firstItem = order.order_product[0]?.product as unknown as { productName: string } | null;
+
+    return {
+      orderId: order.order_id,
+      customerName: user ? `${user.fname} ${user.lname}` : "Unknown",
+      itemName: firstItem?.productName ?? "—",
+      createdAt: order.created_at,
+      status: order.status,
+      total: order.total,
+    };
+  });
+}
 
 // Function to get all the product details to show on the admin/ products page
 async function getProducts() {
   const supabase = getSupabase();
 
-  const { data, error } = await supabase.from("products").select("*");
+  const { data, error } = await supabase.from("product").select("*");
 
   if (error) {
     console.error(error);
@@ -46,7 +75,7 @@ async function getProducts() {
 async function addProduct(product: NewProduct) {
   const supabase = getSupabase();
 
-  const { error } = await supabase.from("products").insert(product);
+  const { error } = await supabase.from("product").insert(product);
 
   if (error) {
     console.error(error);
@@ -57,10 +86,10 @@ async function addProduct(product: NewProduct) {
 }
 
 // Function to remove a product from the database
-async function removeProduct(id: number) {
+async function removeProduct(id: string) {
   const supabase = getSupabase();
 
-  const { error } = await supabase.from("products").delete().eq("id", id);
+  const { error } = await supabase.from("product").delete().eq("id", id);
 
   if (error) {
     console.error(error);
@@ -74,7 +103,7 @@ async function removeProduct(id: number) {
 async function getLowStockProducts() {
   const supabase = getSupabase();
   const { data, error } = await supabase
-    .from("products")
+    .from("product")
     .select("*")
     .lt("quantity", 5);
 

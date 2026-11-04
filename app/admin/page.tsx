@@ -18,7 +18,9 @@ export default function AdminDashboard() {
           <LowStockList />
         </Suspense>
       </div>
-      <RecentOrder />
+      <Suspense fallback={<div>Loading orders</div>}>
+        <RecentOrder />
+      </Suspense>
     </div>
   );
 }
