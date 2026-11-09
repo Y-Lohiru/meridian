@@ -1,11 +1,11 @@
 import ProductList from "@/components/admin/products/productsList";
-import Footer from "@/components/ui/footer";
-import Header from "@/components/ui/header";
+import ProductsHeader from "@/components/admin/products/header";
 import { Suspense } from "react";
 
 export default function ProductsPage() {
   return (
     <div>
+      <ProductsHeader />
       <main>
         <Suspense fallback={<p>Loading products...</p>}>
           <ProductList /> 

@@ -25,6 +25,50 @@ function getSupabase() {
   );
 }
 
+// Function to upload an image to the database
+async function uploadProductImage(file: File) {
+  const supabase = getSupabase();
+  const ext = file.name.split(".").pop();
+  const path = ``;
+}
+
+// Function to get all the orders
+
+async function getOrders(): Promise<RecentOrder[]> {
+  const supabase = getSupabase();
+
+  const { data, error } = await supabase
+    .from("orders")
+    .select(
+      "order_id, created_at, status, total, users(fname, lname), order_product(product(productName))",
+    )
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error(error);
+    return [];
+  }
+
+  return data.map((order) => {
+    const user = order.users as unknown as {
+      fname: string;
+      lname: string;
+    } | null;
+    const firstItem = order.order_product[0]?.product as unknown as {
+      productName: string;
+    } | null;
+
+    return {
+      orderId: order.order_id,
+      customerName: user ? `${user.fname} ${user.lname}` : "Unknown",
+      itemName: firstItem?.productName ?? "—",
+      createdAt: order.created_at,
+      status: order.status,
+      total: order.total,
+    };
+  });
+}
+
 // Function to get the recent order to show in the dashboard
 async function getRecentOrders(): Promise<RecentOrder[]> {
   const supabase = getSupabase();
@@ -43,8 +87,13 @@ async function getRecentOrders(): Promise<RecentOrder[]> {
   }
 
   return data.map((order) => {
-    const user = order.users as unknown as { fname: string; lname: string } | null;
-    const firstItem = order.order_product[0]?.product as unknown as { productName: string } | null;
+    const user = order.users as unknown as {
+      fname: string;
+      lname: string;
+    } | null;
+    const firstItem = order.order_product[0]?.product as unknown as {
+      productName: string;
+    } | null;
 
     return {
       orderId: order.order_id,
@@ -124,6 +173,7 @@ export {
   addProduct,
   removeProduct,
   getProducts,
+  getOrders,
   getRecentOrders,
   getLowStockProducts,
   getMonthlyRevenue,
