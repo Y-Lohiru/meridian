@@ -32,12 +32,12 @@ export default function CartDrawer() {
         <div className="w-screen max-w-md bg-surface text-link shadow-xl flex flex-col border-l border-line">
           {/*header */}
           <div className="flex items-center justify-between px-6 py-6 border-b border-line">
-            <h2 className="font-serif text-lg uppercase tracking-wider">
+            <h2 className="font-display text-lg uppercase tracking-button">
               Your Bag {totalItemCount}
             </h2>
             <button
               onClick={() => setIsCartOpen(false)}
-              className="text-xs uppercase tracking-wider text-ink-muted hover:text-ink cursor-pointer border-r-4"
+              className="text-xs uppercase tracking-button text-ink-muted hover:text-ink cursor-pointer border-r-4"
             >
               close
             </button>
@@ -87,7 +87,7 @@ export default function CartDrawer() {
                     </span>
                     <button
                       onClick={() => removeItem(item.id)}
-                      className="block text-sm text-[#885544] hover:underline mt-2 cursor-pointer"
+                      className="block text-sm text-warning hover:underline mt-2 cursor-pointer"
                     >
                       Remove
                     </button>
@@ -111,7 +111,7 @@ export default function CartDrawer() {
               <Link
                 href="/checkout"
                 onClick={() => setIsCartOpen(false)}
-                className="block w-full bg-brand text-white py-4 text-center text-xs uppercase tracking-widest hover:bg-[#3D2615] transition-colors"
+                className="block w-full bg-brand text-on-brand py-4 text-center text-xs uppercase tracking-widest hover:bg-[#3D2615] transition-colors"
               >
                 Proceed to checkout-${subtotal}
               </Link>

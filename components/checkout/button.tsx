@@ -14,13 +14,13 @@ export default function Button({
   ...props
 }: ButtonProps) {
   const baseStyles =
-    "py-4 px-6 text-sm tracking-wider uppercase transition-colors duration-200 font-medium cursor-pointer disabled:opacity-50";
+    "py-4 px-6 text-sm tracking-button uppercase transition-colors duration-200 font-medium cursor-pointer disabled:opacity-50";
 
   const variants = {
-    primary: "bg-[#332218] text-white hover:bg-[#443023]",
-    secondary: "bg-[#F2EFE9] text-[#332218] hover:bg-[#E8E3DA]",
+    primary: "bg-brand text-on-brand hover:bg-[#443023]",
+    secondary: "bg-surface-cream text-[#332218] hover:bg-[#E8E3DA]",
     outline:
-      "border border-[#332218] text-[#332218] hover:bg-[#332218] hover:text-white",
+      "border border-brand text-[#332218] hover:bg-brand hover:text-on-brand",
   };
 
   const widthStyle = fullWidth ? "w-full" : "";

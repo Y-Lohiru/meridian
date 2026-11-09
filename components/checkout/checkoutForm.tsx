@@ -62,17 +62,17 @@ export default function CheckoutForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-10 text-[#332218]">
+    <form onSubmit={handleSubmit} className="space-y-10 text-ink">
       {/* 01 Contact */}
       <section className="space-y-4">
-        <h2 className="text-lg font-serif border-b border-[#E5E0D8] pb-3">
-          <span className="text-xs font-sans tracking-widest text-[#77665B] block mb-1">
+        <h2 className="text-lg font-display border-b border-line pb-3">
+          <span className="text-xs font-sans tracking-eyebrow text-ink-subtle block mb-1">
             01
           </span>
           Contact
         </h2>
         <div>
-          <label className="block text-xs uppercase tracking-wider text-[#77665B] mb-2">
+          <label className="block eyebrow text-ink-subtle mb-2">
             Email address
           </label>
           <input
@@ -82,7 +82,7 @@ export default function CheckoutForm({
             value={formData.email}
             onChange={handleChange}
             placeholder="you@example.com"
-            className="w-full bg-transparent border border-[#DCD6CE] p-3 text-sm focus:outline-none focus:border-[#332218]"
+            className="w-full bg-transparent border border-line p-3 text-sm focus:outline-none focus:border-brand"
           />
         </div>
         <div className="flex items-center space-x-3 pt-1">
@@ -92,9 +92,9 @@ export default function CheckoutForm({
             id="emailUpdates"
             checked={formData.emailUpdates}
             onChange={handleChange}
-            className="w-4 h-4 accent-[#332218]"
+            className="w-4 h-4 accent-brand"
           />
-          <label htmlFor="emailUpdates" className="text-sm text-[#55443B]">
+          <label htmlFor="emailUpdates" className="text-sm text-ink-muted">
             Email me about new collections and private sales
           </label>
         </div>
@@ -102,15 +102,15 @@ export default function CheckoutForm({
 
       {/* 02 Delivery Address */}
       <section className="space-y-4">
-        <h2 className="text-lg font-serif border-b border-[#E5E0D8] pb-3">
-          <span className="text-xs font-sans tracking-widest text-[#77665B] block mb-1">
+        <h2 className="text-lg font-display border-b border-line pb-3">
+          <span className="text-xs font-sans tracking-widest text-ink-subtle block mb-1">
             02
           </span>
           Delivery address
         </h2>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs uppercase tracking-wider text-[#77665B] mb-2">
+            <label className="block eyebrow text-ink-subtle mb-2">
               First name
             </label>
             <input
@@ -119,11 +119,11 @@ export default function CheckoutForm({
               required
               value={formData.firstName}
               onChange={handleChange}
-              className="w-full bg-transparent border border-[#DCD6CE] p-3 text-sm focus:outline-none focus:border-[#332218]"
+              className="w-full bg-transparent border border-line p-3 text-sm focus:outline-none focus:border-brand"
             />
           </div>
           <div>
-            <label className="block text-xs uppercase tracking-wider text-[#77665B] mb-2">
+            <label className="block eyebrow text-ink-subtle mb-2">
               Last name
             </label>
             <input
@@ -132,15 +132,13 @@ export default function CheckoutForm({
               required
               value={formData.lastName}
               onChange={handleChange}
-              className="w-full bg-transparent border border-[#DCD6CE] p-3 text-sm focus:outline-none focus:border-[#332218]"
+              className="w-full bg-transparent border border-line p-3 text-sm focus:outline-none focus:border-brand"
             />
           </div>
         </div>
 
         <div>
-          <label className="block text-xs uppercase tracking-wider text-[#77665B] mb-2">
-            Address
-          </label>
+          <label className="block eyebrow text-ink-subtle mb-2">Address</label>
           <input
             type="text"
             name="address"
@@ -148,12 +146,12 @@ export default function CheckoutForm({
             value={formData.address}
             onChange={handleChange}
             placeholder="Street and house number"
-            className="w-full bg-transparent border border-[#DCD6CE] p-3 text-sm focus:outline-none focus:border-[#332218]"
+            className="w-full bg-transparent border border-line p-3 text-sm focus:outline-none focus:border-brand"
           />
         </div>
 
         <div>
-          <label className="block text-xs uppercase tracking-wider text-[#77665B] mb-2">
+          <label className="block eyebrow text-ink-subtle mb-2">
             Apartment, suite (optional)
           </label>
           <input
@@ -161,33 +159,31 @@ export default function CheckoutForm({
             name="apartment"
             value={formData.apartment}
             onChange={handleChange}
-            className="w-full bg-transparent border border-[#DCD6CE] p-3 text-sm focus:outline-none focus:border-[#332218]"
+            className="w-full bg-transparent border border-line p-3 text-sm focus:outline-none focus:border-brand"
           />
         </div>
 
         <div className="grid grid-cols-3 gap-4">
           <div>
-            <label className="block text-xs uppercase tracking-wider text-[#77665B] mb-2">
-              City
-            </label>
+            <label className="block eyebrow text-ink-subtle mb-2">City</label>
             <input
               type="text"
               name="city"
               required
               value={formData.city}
               onChange={handleChange}
-              className="w-full bg-transparent border border-[#DCD6CE] p-3 text-sm focus:outline-none focus:border-[#332218]"
+              className="w-full bg-transparent border border-line p-3 text-sm focus:outline-none focus:border-brand"
             />
           </div>
           <div>
-            <label className="block text-xs uppercase tracking-wider text-[#77665B] mb-2">
+            <label className="block eyebrow text-ink-subtle mb-2">
               Country
             </label>
             <select
               name="country"
               value={formData.country}
               onChange={handleChange}
-              className="w-full bg-transparent border border-[#DCD6CE] p-3 text-sm focus:outline-none focus:border-[#332218]"
+              className="w-full bg-transparent border border-line p-3 text-sm focus:outline-none focus:border-brand"
             >
               <option value="Sri Lanka">Sri Lanka</option>
               <option value="Singapore">Singapore</option>
@@ -196,7 +192,7 @@ export default function CheckoutForm({
             </select>
           </div>
           <div>
-            <label className="block text-xs uppercase tracking-wider text-[#77665B] mb-2">
+            <label className="block eyebrow text-ink-subtle mb-2">
               Postcode
             </label>
             <input
@@ -205,13 +201,13 @@ export default function CheckoutForm({
               required
               value={formData.postcode}
               onChange={handleChange}
-              className="w-full bg-transparent border border-[#DCD6CE] p-3 text-sm focus:outline-none focus:border-[#332218]"
+              className="w-full bg-transparent border border-line p-3 text-sm focus:outline-none focus:border-brand"
             />
           </div>
         </div>
 
         <div>
-          <label className="block text-xs uppercase tracking-wider text-[#77665B] mb-2">
+          <label className="block eyebrow text-ink-subtle mb-2">
             Phone, for delivery updates
           </label>
           <input
@@ -221,15 +217,15 @@ export default function CheckoutForm({
             value={formData.phone}
             onChange={handleChange}
             placeholder="+94 77 123 4567"
-            className="w-full bg-transparent border border-[#DCD6CE] p-3 text-sm focus:outline-none focus:border-[#332218]"
+            className="w-full bg-transparent border border-line p-3 text-sm focus:outline-none focus:border-brand"
           />
         </div>
       </section>
 
       {/* 03 Delivery Method */}
       <section className="space-y-4">
-        <h2 className="text-lg font-serif border-b border-[#E5E0D8] pb-3">
-          <span className="text-xs font-sans tracking-widest text-[#77665B] block mb-1">
+        <h2 className="text-lg font-display border-b border-line pb-3">
+          <span className="text-xs font-sans tracking-widest text-ink-subtle block mb-1">
             03
           </span>
           Delivery method
@@ -256,8 +252,8 @@ export default function CheckoutForm({
               key={method.id}
               className={`flex items-center justify-between p-4 border cursor-pointer transition-all ${
                 deliveryMethod === method.id
-                  ? "border-[#332218] bg-[#F4F1EA]"
-                  : "border-[#DCD6CE]"
+                  ? "border-brand bg-surface-selected"
+                  : "border-line"
               }`}
             >
               <div className="flex items-center space-x-3">
@@ -267,11 +263,11 @@ export default function CheckoutForm({
                   value={method.id}
                   checked={deliveryMethod === method.id}
                   onChange={() => setDeliveryMethod(method.id)}
-                  className="accent-[#332218]"
+                  className="accent-brand"
                 />
                 <span className="text-sm font-medium">{method.name}</span>
               </div>
-              <span className="text-sm text-[#77665B]">{method.price}</span>
+              <span className="text-sm text-ink-subtle">{method.price}</span>
             </label>
           ))}
         </div>
@@ -284,9 +280,9 @@ export default function CheckoutForm({
             id="giftWrap"
             checked={formData.giftWrap}
             onChange={handleChange}
-            className="w-4 h-4 accent-[#332218]"
+            className="w-4 h-4 accent-brand"
           />
-          <label htmlFor="giftWrap" className="text-sm text-[#55443B]">
+          <label htmlFor="giftWrap" className="text-sm text-ink-muted">
             Gift-wrap this order in the Meridian black box — complimentary
           </label>
         </div>
@@ -294,8 +290,8 @@ export default function CheckoutForm({
 
       {/* 04 Payment */}
       <section className="space-y-4">
-        <h2 className="text-lg font-serif border-b border-[#E5E0D8] pb-3">
-          <span className="text-xs font-sans tracking-widest text-[#77665B] block mb-1">
+        <h2 className="text-lg font-display border-b border-line pb-3">
+          <span className="text-xs font-sans tracking-widest text-ink-subtle block mb-1">
             04
           </span>
           Payment
@@ -317,8 +313,8 @@ export default function CheckoutForm({
               key={pay.id}
               className={`block p-4 border cursor-pointer transition-all ${
                 formData.paymentMethod === pay.id
-                  ? "border-[#332218] bg-[#F4F1EA]"
-                  : "border-[#DCD6CE]"
+                  ? "border-brand bg-surface-selected"
+                  : "border-line"
               }`}
             >
               <div className="flex items-center space-x-3">
@@ -328,17 +324,17 @@ export default function CheckoutForm({
                   value={pay.id}
                   checked={formData.paymentMethod === pay.id}
                   onChange={handleChange}
-                  className="accent-[#332218]"
+                  className="accent-brand"
                 />
                 <span className="text-sm font-medium">{pay.title}</span>
               </div>
-              <p className="text-xs text-[#77665B] mt-1 ml-7">{pay.desc}</p>
+              <p className="text-xs text-ink-subtle mt-1 ml-7">{pay.desc}</p>
             </label>
           ))}
         </div>
 
         {(formData.paymentMethod === "cod" && (
-          <div className="bg-[#F4F1EA] p-4 text-xs text-[#66554A] space-y-1">
+          <div className="bg-surface-selected p-4 text-xs text-ink-muted space-y-1">
             <p>
               • We&apos;ll call or text the phone number above to confirm your
               order before we dispatch it.
@@ -350,7 +346,7 @@ export default function CheckoutForm({
           </div>
         )) ||
           (formData.paymentMethod === "bank" && (
-            <div className="bg-[#F4F1EA] p-4 text-xs text-[#66554A] space-y-1">
+            <div className="bg-surface-selected p-4 text-xs text-ink-muted space-y-1">
               <p>Uplaod the recipt of the bank transfer</p>
               <p>Bank Names-***********</p>
               <p>Bank Accounts NUmbers-***********</p>
@@ -383,7 +379,7 @@ export default function CheckoutForm({
         <Button type="submit" fullWidth>
           Place Order — ${grandTotal}
         </Button>
-        <p className="text-xs text-center text-[#77665B] mt-3">
+        <p className="text-xs text-center text-ink-subtle mt-3">
           By placing your order you agree to our Terms of Sale and Privacy
           Policy
         </p>
