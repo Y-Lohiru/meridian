@@ -1,4 +1,4 @@
-import { Product, ProductFilters } from "@/types/product";
+import { Product, ProductFilters } from "@/components/product detail/types/product";
 import { createClient } from "@/app/utils/supabase/server";
 import { cookies } from "next/headers";
 
@@ -110,9 +110,81 @@ export async function getProducts(filters: ProductFilters): Promise<Product[]> {
       }
     }
 
+    
     return resultList.filter((p): p is Product => Boolean(p) && Boolean(p.id));
   } catch (err) {
     console.error("Database query error, returning mock products:", err);
     return MOCK_PRODUCTS;
+  }
+}
+
+// Append this function inside lib/data/products.ts
+
+/*export async function getProductById(id: string): Promise<Product | null> {
+  try {
+    const cookieStore = await cookies();
+    const supabase = createClient(cookieStore);
+
+    const { data, error } = await supabase
+      .from("product")
+      .select('id, created_at, "productName", price, category, material, color, quantity, image_url')
+      .eq("id", id)
+      .single();
+
+    if (error || !data) {
+      console.warn(`Product ${id} not found in DB, checking fallback mock list:`, error?.message);
+      const mockMatch = MOCK_PRODUCTS.find((p) => p.id === id);
+      return mockMatch || null;
+    }
+
+    return data as Product;
+  } catch (err) {
+    console.error(`Error fetching product by ID (${id}):`, err);
+    return null;
+  }
+}*/
+
+export async function getProductById(id: string): Promise<Product | null> {
+  try {
+    const cookieStore = await cookies();
+    const supabase = createClient(cookieStore);
+
+    const { data, error } = await supabase
+      .from("product")
+      .select('id, created_at, "productName", price, category, material, color, quantity, image_url, images, variants')
+      .eq("id", id)
+      .single();
+
+    if (error || !data) {
+      console.warn(`Product ${id} not found in DB:`, error?.message);
+      return null;
+    }
+
+    return data as Product;
+  } catch (err) {
+    console.error(`Error fetching product ${id}:`, err);
+    return null;
+  }
+}
+
+export async function getProductReviews(productId: string): Promise<ProductReview[]> {
+  try {
+    const cookieStore = await cookies();
+    const supabase = createClient(cookieStore);
+
+    const { data, error } = await supabase
+      .from("reviews")
+      .select("*")
+      .eq("product_id", productId)
+      .order("created_at", { ascending: false });
+
+    if (error || !data) {
+      return [];
+    }
+
+    return data as ProductReview[];
+  } catch (err) {
+    console.error(`Error fetching reviews for ${productId}:`, err);
+    return [];
   }
 }
