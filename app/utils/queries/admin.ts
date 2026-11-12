@@ -12,11 +12,15 @@ interface RecentOrder {
 }
 
 interface NewProduct {
-  name: string;
-  quantity: number;
+  productName: string;
   price: number;
+  quantity: number;
+  category: string;
+  material: string;
+  color: string;
   image_url?: string;
 }
+
 
 function getSupabase() {
   return createClient(
