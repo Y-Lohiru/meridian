@@ -1,4 +1,5 @@
 // import Hero from "@/components/home screen/hero";
+
 import Footer from "@/components/ui/footer";
 import Header from "@/components/ui/header";
 
