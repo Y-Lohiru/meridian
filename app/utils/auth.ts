@@ -4,5 +4,4 @@ export default async function checkUser() {
   const supabase = createClient();
   return await supabase.auth.getUser();
   
-
 }

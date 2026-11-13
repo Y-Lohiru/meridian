@@ -1,6 +1,6 @@
 "use client"
 
-import { Bar, BarChart } from "recharts"
+import { Bar, BarChart, XAxis, YAxis } from "recharts"
 import { ChartContainer, type ChartConfig } from "@/components/ui/chart"
 
 
@@ -26,8 +26,25 @@ const chartConfig = {
 
 export default function ChartExample() {
   return (
-    <ChartContainer config={chartConfig} className="h-48 bg-on-brand w-full">
-      <BarChart accessibilityLayer data={chartData} className="max-h-64">
+    <ChartContainer
+      config={chartConfig}
+      className="flex-1 aspect-auto min-h-48 w-full bg-on-brand border rounded-2xl p-3"
+    >
+      <BarChart
+        accessibilityLayer
+        data={chartData}
+        margin={{ top: 10, right: 10, bottom: 20, left: 10 }}
+      >
+        <XAxis
+          dataKey="month"
+          tickLine={false}
+          tickFormatter={(value) => value.slice(0, 3)}
+          label={{ value: "Month", position: "insideBottom", offset: -15 }}
+        />
+        <YAxis
+          tickLine={false}
+          label={{ value: "Sales", angle: -90, position: "insideLeft" }}
+        />
         <Bar dataKey="desktop" fill="var(--color-desktop)" radius={4} />
         <Bar dataKey="mobile" fill="var(--color-mobile)" radius={4} />
       </BarChart>
