@@ -80,9 +80,10 @@ const changeProfile = async (e: React.FormEvent<HTMLFormElement>) => {
 
     <div>   
         <ProfilePage/>
-        <h1>Profile Page</h1>
-        <a href="/track/sjdhjkh">Edit Profile</a>
         <button onClick={signout}>signout</button>
+
+        {/* <h1>Profile Page</h1>
+        <a href="/track/sjdhjkh">Edit Profile</a>
         
         {user ? (
         <form onSubmit={changeProfile}>
@@ -98,7 +99,7 @@ const changeProfile = async (e: React.FormEvent<HTMLFormElement>) => {
             </form>
         ) : (
             <p>Loading...</p>
-        )}
+        )} */}
     </div>
   )
 }

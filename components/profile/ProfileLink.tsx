@@ -1,9 +1,10 @@
 import React from 'react'
 
-const ProfileLink = () => {
+const ProfileLink = ({active,url,text}:{active:boolean,url:string,text:string}) => {
   return (
-    <div>
-        <a href='' className=' px-12 w-2xl border-1 my-2 py-0 border-brand '>Profile</a>
+    <div className='flex flex-col w-full'>
+      <hr/>
+        <a href={url} className={`px-4 py-2  border-brand font-weight-500 ${active && 'border-l-4 border-l-brand' }`}>{text}</a>
     </div>
   )
 }

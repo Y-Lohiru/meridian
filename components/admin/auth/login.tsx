@@ -30,9 +30,9 @@ export default function LoginPage() {
 
     // Only let users with the admin role into the admin dashboard
     const { data: user } = await supabase
-      .from("users")
+      .from("roles")
       .select("role")
-      .eq("user_id", data.user.id)
+      .eq("userid", data.user.id)
       .single();
 
     if (user?.role !== "admin") {
