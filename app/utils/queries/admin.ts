@@ -1,6 +1,7 @@
 // Yuwan - Admin dashboard
-
-import { createClient } from "@supabase/supabase-js";
+"use server";
+import { cookies } from "next/headers";
+import { createClient } from "@/app/utils/supabase/server";
 
 interface RecentOrder {
   orderId: string;
@@ -21,17 +22,39 @@ interface NewProduct {
   image_url?: string;
 }
 
+// Supabase client that acts as the logged-in user (reads the session cookie)
+async function getSupabase() {
+  return createClient(await cookies());
+}
 
-function getSupabase() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
-  );
+// Throws unless the logged-in user is an admin. Used before any write.
+async function requireAdmin() {
+  const supabase = await getSupabase();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error("Not logged in");
+  }
+
+  const { data: profile } = await supabase
+    .from("users")
+    .select("role")
+    .eq("user_id", user.id)
+    .single();
+
+  if (profile?.role !== "admin") {
+    throw new Error("Not an admin");
+  }
+
+  return supabase;
 }
 
 // Function to upload an image to the database
 async function uploadProductImage(file: File) {
-  const supabase = getSupabase();
+  const supabase = await requireAdmin();
   const ext = file.name.split(".").pop();
   const path = ``;
 }
@@ -39,7 +62,7 @@ async function uploadProductImage(file: File) {
 // Function to get all the orders
 
 async function getOrders(): Promise<RecentOrder[]> {
-  const supabase = getSupabase();
+  const supabase = await getSupabase();
 
   const { data, error } = await supabase
     .from("orders")
@@ -75,7 +98,7 @@ async function getOrders(): Promise<RecentOrder[]> {
 
 // Function to get the recent order to show in the dashboard
 async function getRecentOrders(): Promise<RecentOrder[]> {
-  const supabase = getSupabase();
+  const supabase = await getSupabase();
 
   const { data, error } = await supabase
     .from("orders")
@@ -112,7 +135,7 @@ async function getRecentOrders(): Promise<RecentOrder[]> {
 
 // Function to get all the product details to show on the admin/ products page
 async function getProducts() {
-  const supabase = getSupabase();
+  const supabase = await getSupabase();
 
   const { data, error } = await supabase.from("product").select("*");
 
@@ -126,7 +149,7 @@ async function getProducts() {
 
 // Function to add new products to the database
 async function addProduct(product: NewProduct) {
-  const supabase = getSupabase();
+  const supabase = await requireAdmin();
 
   const { error } = await supabase.from("product").insert(product);
 
@@ -140,7 +163,7 @@ async function addProduct(product: NewProduct) {
 
 // Function to remove a product from the database
 async function removeProduct(id: string) {
-  const supabase = getSupabase();
+  const supabase = await requireAdmin();
 
   const { error } = await supabase.from("product").delete().eq("id", id);
 
@@ -154,7 +177,7 @@ async function removeProduct(id: string) {
 
 // Function to get the products with low stock to show on the dashboard
 async function getLowStockProducts() {
-  const supabase = getSupabase();
+  const supabase = await getSupabase();
   const { data, error } = await supabase
     .from("product")
     .select("*")
@@ -169,9 +192,10 @@ async function getLowStockProducts() {
   return data;
 }
 
-function getOrderStatus() {}
+// "use server" files can only export async functions, so these stubs are async
+async function getOrderStatus() {}
 
-function getMonthlyRevenue() {}
+async function getMonthlyRevenue() {}
 
 export {
   addProduct,

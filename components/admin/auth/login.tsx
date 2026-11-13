@@ -86,7 +86,7 @@ export default function LoginPage() {
           type="submit"
           disabled={loading}
           className="h-10 rounded-md bg-brand text-white font-medium hover:opacity-90 disabled:opacity-60"
-        >
+        >x
           {loading ? "Signing in..." : "Login"}
         </button>
       </form>
