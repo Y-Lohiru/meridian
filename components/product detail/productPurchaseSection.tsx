@@ -4,6 +4,7 @@
 import React, { useState } from "react";
 import { Product, ProductVariant } from "./types/product";
 import ProductInfo from "./productInfo";
+import { usecart } from "@/components/checkout/CartContent";
 
 interface ProductPurchaseSectionProps {
   product: Product;
@@ -22,7 +23,7 @@ export default function ProductPurchaseSection({
   const hasVariants = variants.length > 0;
 
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(
-    hasVariants ? variants[0] : null
+    hasVariants ? variants[0] : null,
   );
   const [quantity, setQuantity] = useState(1);
   const [isAdding, setIsAdding] = useState(false);
@@ -159,10 +160,10 @@ export default function ProductPurchaseSection({
             {isAdding
               ? "Adding..."
               : added
-              ? "✓ Added to Bag"
-              : isOutOfStock
-              ? "Sold Out"
-              : `ADD TO BAG — $${totalPrice.toLocaleString()}`}
+                ? "✓ Added to Bag"
+                : isOutOfStock
+                  ? "Sold Out"
+                  : `ADD TO BAG — $${totalPrice.toLocaleString()}`}
           </button>
         </div>
 

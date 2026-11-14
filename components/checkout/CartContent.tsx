@@ -1,5 +1,6 @@
 "use client";
 
+import { addProductToCart, type AddCartItem } from "./cartActions";
 import React, {
   createContext,
   useCallback,
@@ -19,12 +20,6 @@ export interface CartItem {
   price: number;
   quantity: number;
   imageUrl: string;
-}
-
-interface AddCartItem {
-  productId: string;
-  variant: string;
-  quantity: number;
 }
 
 interface CartContextType {
@@ -137,26 +132,15 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe();
   }, [supabase, refreshCart]);
 
-  // Add product using PostgreSQL function
+  // Add product to cart
   const addToCart = async (item: AddCartItem) => {
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
+    // Run the frontend cart action
+    await addProductToCart(item);
 
-    if (authError || !user) {
-      throw new Error("Please log in before adding products to your cart.");
-    }
-
-    const { error } = await supabase.rpc("add_to_cart", {
-      p_product_id: item.productId,
-      p_variant: item.variant,
-      p_quantity: item.quantity,
-    });
-
-    if (error) throw error;
-
+    // Refresh the cart displayed in React
     await refreshCart();
+
+    // Open the cart drawer
     setIsCartOpen(true);
   };
 
