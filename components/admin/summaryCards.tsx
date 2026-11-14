@@ -11,7 +11,6 @@ export default function SummaryCard({ title, value, colorClass }: Details) {
     >
       <span className="text-xs opacity-80">{title}</span>
       <span className="font-display text-2xl sm:text-3xl tabular-nums">{value}</span>
-      <span className="hidden sm:block text-xs opacity-60">Date</span>
     </div>
   );
 }

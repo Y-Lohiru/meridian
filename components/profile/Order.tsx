@@ -31,10 +31,10 @@ const Order = ({orderid}:{orderid:string}) => {
 fetchOrder();
   },[orderid]);
   return (
-    <div className='flex w-full flex-col gap-4 rounded-lg border border-brand/15 bg-white p-4 my-2 shadow-sm transition-shadow hover:shadow-md sm:flex-row sm:items-center sm:justify-between'>
+    <div className='flex w-full flex-col gap-4 rounded-sm border border-brand/15 bg-white p-4 my-2 sm:flex-row sm:items-center sm:justify-between'>
 <div className="flex gap-4 sm:w-2/3">
           <div className="img shrink-0">
-        <img src={order?.product?.image_url} alt='Pantry' className='size-24 rounded-md bg-brand/5 object-cover'></img>
+        <img src={order?.product?.image_url} alt='Pantry' className='size-20 rounded-sm bg-brand/10 object-cover'></img>
       </div>
       <div className="flex flex-col justify-center gap-1 px-2">
         <p className='font-medium text-brand'>{order?.product?.productName} <span className='ml-2 rounded-full bg-brand/15 px-2.5 py-0.5 align-middle text-xs font-medium capitalize text-brand'>{order?.orders?.status}</span></p>
@@ -43,7 +43,7 @@ fetchOrder();
       </div>
 </div>
 <div className="flex flex-col justify-center sm:items-end">
-  <Button ><a href={`/track/${orderid}`} target="_blank" rel="noopener noreferrer" className=''>View Details</a></Button>
+  <Button className="rounded-sm px-5 py-2 text-xs tracking-widest"><a href={`/track/${orderid}`} target="_blank" rel="noopener noreferrer" className=''>View Details</a></Button>
 </div>
     </div>)
 };
