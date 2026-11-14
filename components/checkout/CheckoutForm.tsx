@@ -264,7 +264,7 @@ export default function CheckoutForm({
             className="w-full bg-transparent border border-line p-3 text-sm focus:outline-none focus:border-brand"
           />
         </div>
-        <div className="flex items-center space-x-3 pt-1">
+        {/*<div className="flex items-center space-x-3 pt-1">
           <input
             type="checkbox"
             name="emailUpdates"
@@ -276,7 +276,7 @@ export default function CheckoutForm({
           <label htmlFor="emailUpdates" className="text-sm text-ink-muted">
             Email me about new collections and private sales
           </label>
-        </div>
+        </div>*/}
       </section>
 
       {/* 02 Delivery Address */}
