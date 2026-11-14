@@ -1,55 +1,17 @@
+
 import Link from "next/link";
 
 const shopLinks = [
-  "New in",
-  "Fashion",
-  "Home & Living",
-  "Beauty",
-  "Technology",
-  "Gifts",
-];
-
-const helpLinks = [
-  "Delivery",
-  "Returns",
-  "Order tracking",
-  "Contact concierge",
-  "Size guides",
+  { name: "Fashion", href: "/shop?category=Boots,Loafers,Formal,Sneakers,Heels,Sandals" },
+  { name: "Home & Living", href: "/shop?category=Lighting,Furniture,Ceramics" },
+  { name: "Beauty", href: "/shop" },
+  { name: "Technology", href: "/shop" },
 ];
 
 export default function Footer() {
   return (
     <footer className="bg-brand-deep text-on-brand">
-
       <div className="mx-auto grid max-w-[85rem] grid-cols-1 gap-12 px-4 py-16 md:grid-cols-2 md:px-10 lg:grid-cols-3 lg:py-20">
-
-        {/* Newsletter */}
-        <div className="max-w-md">
-          <h2 className="font-display text-4xl">
-            Join the Meridian list.
-          </h2>
-
-          <p className="mt-5 text-sm leading-relaxed text-on-brand-soft">
-            First look at new collections and private sales.
-            No noise — one letter a fortnight.
-          </p>
-
-          <form className="mt-8 flex border-b border-on-brand-muted">
-            <input
-              type="email"
-              placeholder="Email address"
-              required
-              className="min-w-0 flex-1 border-0 bg-transparent py-4 text-sm text-on-brand outline-none placeholder:text-on-brand-muted"
-            />
-
-            <button
-              type="submit"
-              className="px-3 text-2xs font-semibold tracking-button transition-colors hover:text-on-brand-muted"
-            >
-              SUBSCRIBE →
-            </button>
-          </form>
-        </div>
 
         {/* Shop */}
         <div className="lg:pl-16">
@@ -59,32 +21,12 @@ export default function Footer() {
 
           <ul className="space-y-4 text-sm text-on-brand-soft">
             {shopLinks.map((item) => (
-              <li key={item}>
+              <li key={item.name}>
                 <Link
-                  href="#"
+                  href={item.href}
                   className="transition-colors hover:text-white"
                 >
-                  {item}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        {/* Help */}
-        <div>
-          <h3 className="eyebrow mb-7 text-on-brand-muted">
-            HELP
-          </h3>
-
-          <ul className="space-y-4 text-sm text-on-brand-soft">
-            {helpLinks.map((item) => (
-              <li key={item}>
-                <Link
-                  href={item === "Order tracking" ? "/track-order" : "#"}
-                  className="transition-colors hover:text-white"
-                >
-                  {item}
+                  {item.name}
                 </Link>
               </li>
             ))}
@@ -103,8 +45,19 @@ export default function Footer() {
           <p>© 2026 Meridian. All rights reserved.</p>
 
           <div className="flex gap-5">
-            <Link href="/privacy">Privacy</Link>
-            <Link href="/terms">Terms</Link>
+            <Link
+              href="/Policies/privacy"
+              className="transition-colors hover:text-white"
+            >
+              Privacy
+            </Link>
+
+            <Link
+              href="/Policies/terms"
+              className="transition-colors hover:text-white"
+            >
+              Terms
+            </Link>
           </div>
         </div>
       </div>

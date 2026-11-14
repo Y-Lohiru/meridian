@@ -124,6 +124,22 @@ async function getOrders(): Promise<RecentOrder[]> {
   });
 }
 
+async function getPendingOrders() : Promise<number> {
+  const supabase = await getSupabase();
+
+  const { data, error } = await supabase
+    .from("orders")
+    .select("order_id")
+    .eq("status", "pending");
+
+  if (error) {
+    console.error(error);
+    return 0;
+  }
+
+  return data.length;
+}
+
 // Function to get the recent order to show in the dashboard
 async function getRecentOrders(): Promise<RecentOrder[]> {
   const supabase = await getSupabase();
@@ -278,6 +294,7 @@ async function getMonthlyRevenue() {
   return months;
 }
 
+
 export {
   uploadProductImage,
   signOut,
@@ -289,4 +306,5 @@ export {
   getLowStockProducts,
   getMonthlyRevenue,
   getOrderStatus,
+  getPendingOrders,
 };

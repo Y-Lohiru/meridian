@@ -1,7 +1,7 @@
 // components/checkout/checkoutform.tsx
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 import Button from "./Button";
@@ -58,9 +58,6 @@ export default function CheckoutForm({
     }
   };
 
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [receiptFile, setReceiptFile] = useState<File | null>(null);
-
   const [isProfileLoading, setIsProfileLoading] = useState(true);
   const [profileLoadError, setProfileLoadError] = useState<string | null>(null);
 
@@ -73,7 +70,6 @@ export default function CheckoutForm({
       try {
         const supabase = createClient();
 
-        // 1. Get currently logged-in user
         const {
           data: { user },
           error: authError,
@@ -137,17 +133,6 @@ export default function CheckoutForm({
       cancelled = true;
     };
   }, []);
-
-  const handleButtonClick = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setReceiptFile(file);
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -467,7 +452,6 @@ export default function CheckoutForm({
         </div>
       </section>
 
-      {/* 04 Payment */}
       <section className="space-y-4">
         <h2 className="text-lg font-display border-b border-line pb-3">
           <span className="text-xs font-sans tracking-widest text-ink-subtle block mb-1">
@@ -475,82 +459,60 @@ export default function CheckoutForm({
           </span>
           Payment
         </h2>
-        <div className="space-y-3">
-          {[
-            {
-              id: "cod",
-              title: "Cash on delivery",
-              desc: "Pay the courier in cash when your order arrives",
-            },
-            {
-              id: "bank",
-              title: "Bank transfer",
-              desc: "Transfer to our account, then upload your receipt",
-            },
-          ].map((pay) => (
-            <label
-              key={pay.id}
-              className={`block p-4 border cursor-pointer transition-all ${
-                formData.paymentMethod === pay.id
-                  ? "border-brand bg-surface-selected"
-                  : "border-line"
-              }`}
-            >
-              <div className="flex items-center space-x-3">
-                <input
-                  type="radio"
-                  name="paymentMethod"
-                  value={pay.id}
-                  checked={formData.paymentMethod === pay.id}
-                  onChange={handleChange}
-                  className="accent-brand"
-                />
-                <span className="text-sm font-medium">{pay.title}</span>
-              </div>
-              <p className="text-xs text-ink-subtle mt-1 ml-7">{pay.desc}</p>
-            </label>
-          ))}
-        </div>
 
-        {(formData.paymentMethod === "cod" && (
-          <div className="bg-surface-selected p-4 text-xs text-ink-muted space-y-1">
-            <p>
-              • We&apos;ll call or text the phone number above to confirm your
-              order before we dispatch it.
-            </p>
-            <p>
-              • Pay the courier in cash when your order arrives. Please have the
-              exact amount ready.
-            </p>
-          </div>
-        )) ||
-          (formData.paymentMethod === "bank" && (
-            <div className="bg-surface-selected p-4 text-xs text-ink-muted space-y-1">
-              <p>Uplaod the recipt of the bank transfer</p>
-              <p>Bank Names-***********</p>
-              <p>Bank Accounts NUmbers-***********</p>
-              {/* Hidden native file input tied to useRef */}
+        <div className="space-y-3">
+          {/* Cash on Delivery */}
+          <label
+            className={`block p-4 border cursor-pointer transition-all ${
+              formData.paymentMethod === "cod"
+                ? "border-brand bg-surface-selected"
+                : "border-line"
+            }`}
+          >
+            <div className="flex items-center space-x-3">
               <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleFileChange}
-                className="hidden"
-                accept="image/*,.pdf"
+                type="radio"
+                name="paymentMethod"
+                value="cod"
+                checked={formData.paymentMethod === "cod"}
+                onChange={handleChange}
+                className="accent-brand"
               />
 
-              {/* Custo Button that triggers the hidden input */}
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={handleButtonClick}
-                fullWidth
-              >
-                {receiptFile
-                  ? `Selected: ${receiptFile.name}`
-                  : "Upload Receipt"}
-              </Button>
+              <span className="text-sm font-medium">Cash on Delivery</span>
             </div>
-          ))}
+
+            <p className="text-xs text-ink-subtle mt-1 ml-7">
+              Pay the courier in cash when your order arrives.
+            </p>
+          </label>
+
+          {/* Card on Delivery */}
+          <label
+            className={`block p-4 border cursor-pointer transition-all ${
+              formData.paymentMethod === "card_on_delivery"
+                ? "border-brand bg-surface-selected"
+                : "border-line"
+            }`}
+          >
+            <div className="flex items-center space-x-3">
+              <input
+                type="radio"
+                name="paymentMethod"
+                value="card_on_delivery"
+                checked={formData.paymentMethod === "card_on_delivery"}
+                onChange={handleChange}
+                className="accent-brand"
+              />
+
+              <span className="text-sm font-medium">Card on Delivery</span>
+            </div>
+
+            <p className="text-xs text-ink-subtle mt-1 ml-7">
+              Pay using a debit or credit card when your order arrives.
+            </p>
+          </label>
+        </div>
       </section>
 
       {/* Submit CTA */}

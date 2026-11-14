@@ -1,10 +1,18 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Suspense } from "react";
 
 import ShopByDepartment from "./shopByDep";
 import TheEdit from "./theEdit";
 import WinterHouse from "./serviceHighlights";
 import Benefits from "./benifits";
+import { getProducts } from "@/lib/data/products";
+
+// Loads products from the database on the server, then hands them to the client component
+async function TheEditSection() {
+  const products = await getProducts({ sort: "curated" });
+  return <TheEdit products={products} />;
+}
 
 export default function Hero() {
   return (
@@ -30,7 +38,7 @@ export default function Hero() {
 
           <div className="mt-9 flex flex-wrap gap-3">
             <Link
-              href="#edit"
+              href="/shop"
               className="flex min-h-14 items-center justify-center bg-brand px-7 text-2xs font-semibold tracking-button text-on-brand transition-colors hover:bg-brand-walnut"
             >
               SHOP NEW ARRIVALS
@@ -76,7 +84,9 @@ export default function Hero() {
       </section>
 
       <ShopByDepartment />
-      <TheEdit />
+      <Suspense fallback={<section className="bg-surface-cream py-14 md:py-28" />}>
+        <TheEditSection />
+      </Suspense>
       <WinterHouse />
       <Benefits />
 

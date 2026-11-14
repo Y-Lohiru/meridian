@@ -1,11 +1,10 @@
-// components/Product page/ProductGallery.tsx
 "use client";
 
 import React, { useState } from "react";
 
 interface ProductGalleryProps {
-  mainImage: string;
-  extraImages?: string[];
+  mainImage?: string | null;
+  extraImages?: string[] | null;
   productName: string;
 }
 
@@ -14,14 +13,20 @@ export default function ProductGallery({
   extraImages = [],
   productName,
 }: ProductGalleryProps) {
-  // Combine main image_url and images array without duplicates
   const allImages = Array.from(
-    new Set([mainImage, ...(extraImages || [])].filter(Boolean))
+    new Set([mainImage, ...(extraImages || [])].filter((url): url is string => Boolean(url && url.trim())))
   );
 
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [failedUrls, setFailedUrls] = useState<Record<string, boolean>>({});
+
   const hasMultipleImages = allImages.length > 1;
-  const activeImage = allImages[selectedIndex] || "/placeholder.jpg";
+  const activeImage = allImages[selectedIndex];
+  const showPlaceholder = !activeImage || failedUrls[activeImage];
+
+  const handleImageError = (url: string) => {
+    setFailedUrls((prev) => ({ ...prev, [url]: true }));
+  };
 
   return (
     <div className="flex flex-col-reverse md:flex-row gap-4 sticky top-6">
@@ -30,6 +35,8 @@ export default function ProductGallery({
         <div className="flex md:flex-col gap-3 overflow-x-auto md:overflow-y-auto md:w-20 shrink-0 scrollbar-none">
           {allImages.map((imgUrl, idx) => {
             const isSelected = idx === selectedIndex;
+            const thumbFailed = failedUrls[imgUrl];
+
             return (
               <button
                 key={`${imgUrl}-${idx}`}
@@ -41,26 +48,40 @@ export default function ProductGallery({
                     : "border-line opacity-70 hover:opacity-100"
                 }`}
               >
-                <img
-                  src={imgUrl}
-                  alt={`${productName} view ${idx + 1}`}
-                  className="w-full h-full object-cover"
-                />
+                {!thumbFailed ? (
+                  <img
+                    src={imgUrl}
+                    alt={`${productName} view ${idx + 1}`}
+                    onError={() => handleImageError(imgUrl)}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full bg-placeholder" />
+                )}
               </button>
             );
           })}
         </div>
       )}
 
-      {/* Main Image Frame */}
+      {/* Main Image Frame — Uses bg-placeholder radial gradient when image is missing */}
       <div className="relative flex-1 aspect-[4/5] bg-placeholder overflow-hidden border border-line">
-        <img
-          src={activeImage}
-          alt={productName}
-          className="w-full h-full object-cover transition-opacity duration-300"
-        />
+        {!showPlaceholder ? (
+          <img
+            src={activeImage}
+            alt={productName}
+            onError={() => handleImageError(activeImage)}
+            className="w-full h-full object-cover transition-opacity duration-300"
+          />
+        ) : (
+          <div className="w-full h-full bg-placeholder flex items-center justify-center p-6">
+            <span className="eyebrow text-ink-subtle text-center opacity-75">
+              {productName}
+            </span>
+          </div>
+        )}
 
-        {/* Image Counter Badge (Matches PDF [IMAGE 1 OF 5]) */}
+        {/* Image Counter Badge */}
         {hasMultipleImages && (
           <div className="absolute bottom-4 left-4 bg-surface/90 backdrop-blur-sm px-3 py-1 text-[10px] eyebrow text-ink border border-line">
             {selectedIndex + 1} / {allImages.length}
