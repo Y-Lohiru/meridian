@@ -15,6 +15,7 @@ export default function HomePage() {
     </div>
   );
 }*/
+import Hero from "@/components/homescreen/hero";
 import React from "react";
 // import Hero from "@/components/home screen/hero";
 
@@ -22,7 +23,7 @@ export default function HomePage() {
   return (
     <div>
       <main className="p-8">
-        <p>Helooo</p>
+        <Hero/>
       </main>
     </div>
   );

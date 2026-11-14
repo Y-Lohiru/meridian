@@ -2,7 +2,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { submitProductReview } from "@/app/shop/[id]/action";
+import { submitProductReview } from "@/app/(store)/shop/[id]/action";
 
 interface WriteReviewFormProps {
   productId: string;

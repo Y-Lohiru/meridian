@@ -3,9 +3,6 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Bodoni_Moda, Manrope } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/components/checkout/CartContent";
-import CartDrawer from "@/components/checkout/CartDrawer";
-import Header from "@/components/ui/header";
-import Footer from "@/components/ui/footer";
 
 const bodoni = Bodoni_Moda({
   subsets: ["latin"],
@@ -41,11 +38,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} ${bodoni.variable} ${manrope.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <CartProvider>
-          {children}
-          <Footer />
-          <CartDrawer />
-        </CartProvider>
+        <CartProvider>{children}</CartProvider>
       </body>
     </html>
   );

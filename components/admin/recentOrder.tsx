@@ -2,73 +2,89 @@ import { getRecentOrders } from "@/app/utils/queries/admin";
 
 export default async function RecentOrder() {
   const orders = await getRecentOrders();
-  
-  // const order = [
-  //   {
-  //     id: "#M-10484",
-  //     customer: "Kasun D.",
-  //     item: "Hand-thrown stoneware vase",
-  //     date: "Oct 19",
-  //     status: "Awaiting payment",
-  //     total: 165,
-  //   },
-  //   {
-  //     id: "#M-10483",
-  //     customer: "Nimali F.",
-  //     item: "Noir Absolu eau de parfum",
-  //     date: "Oct 19",
-  //     status: "Awaiting payment",
-  //     total: 210,
-  //   },
-  //   {
-  //     id: "#M-10482",
-  //     customer: "Amara P.",
-  //     item: "Alabaster table lamp",
-  //     date: "Oct 19",
-  //     status: "To ship",
-  //     total: 540,
-  //   },
-  //   {
-  //     id: "#M-10481",
-  //     customer: "Daniel K.",
-  //     item: "Double-faced cashmere overcoat",
-  //     date: "Oct 19",
-  //     status: "To ship",
-  //     total: 890,
-  //   },
-  //   {
-  //     id: "#M-10480",
-  //     customer: "Lena S.",
-  //     item: "Merino herringbone throw",
-  //     date: "Oct 18",
-  //     status: "To ship",
-  //     total: 280,
-  //   },
-  // ];
 
   const headers = ["ORDER", "CUSTOMER", "ITEM", "DATE", "STATUS", "TOTAL"];
 
-  return (
-    <div className="bg-on-brand p-3 border rounded-2xl">
-      <span className="text-brand font-semibold">Recent Orders</span>
-      <div>
-        <table className="w-full">
-          <tr>
-            {headers.map((header) => (
-              <th className="text-brand font-semibold">{header}</th>
-            ))}
-          </tr>
+  function statusClass(status: string) {
+    if (status === "To ship")
+      return "bg-status-toship border-status-toship text-on-brand";
+    if (status === "Delivered")
+      return "bg-status-delivered border-status-delivered text-ink";
+    if (status === "Shipped") return "border-status-shipped text-brand";
+    return "border-warning text-warning";
+  }
 
-          {orders.map((o) => (
-            <tr className="border-t border-line">
-              <td>{o.orderId}</td>
-              <td>{o.itemName}</td>
-              <td>{o.itemName}</td>
-              <td>{o.createdAt}</td>
-              <td>{o.status}</td>
-              <td className="text-right">${o.total}</td>
+  return (
+    <div className="lg:bg-on-brand lg:p-4 lg:border lg:border-line lg:rounded-lg">
+      <span className="text-sm text-ink font-semibold">Recent Orders</span>
+      <ul className="flex flex-col gap-2.5 mt-3 lg:hidden">
+        {orders.map((o) => (
+          <li
+            key={o.orderId}
+            className="flex flex-col gap-1.5 rounded-lg border border-line bg-on-brand p-4"
+          >
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-sm font-bold text-ink">
+                #{o.orderId.slice(0, 8).toUpperCase()}
+              </span>
+              <span
+                className={`rounded-full border px-2.5 py-0.5 text-xs font-semibold ${statusClass(o.status)}`}
+              >
+                {o.status}
+              </span>
+            </div>
+
+            <span className="truncate text-sm text-ink-muted">
+              {o.customerName} . {o.itemName}
+            </span>
+
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-ink-muted">
+                {new Date(o.createdAt).toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                })}
+              </span>
+              <span className="text-sm font-bold text-ink tabular-nums">
+                ${o.total}
+              </span>
+            </div>
+          </li>
+        ))}
+      </ul>
+
+      <div className="hidden lg:block overflow-x-auto mt-3 -mx-4 px-4 sm:mx-0 sm:px-0">
+        <table className="w-full whitespace-nowrap text-left text-sm">
+          <thead>
+            <tr>
+              {headers.map((header) => (
+                <th className="px-3 py-2 text-xs text-ink-muted font-semibold">
+                  {header}
+                </th>
+              ))}
             </tr>
-          ))}
+          </thead>
+          <tbody>
+            {orders.map((o) => (
+              <tr key={o.orderId} className="border-t border-line">
+                <td className="px-3 py-3 font-semibold max-w-24 truncate">
+                  {o.orderId}
+                </td>
+                <td className="px-3 py-3">{o.customerName}</td>
+                <td className="px-3 py-3">{o.itemName}</td>
+                <td className="px-3 py-3 text-ink-muted">
+                  {new Date(o.createdAt).toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                  })}
+                </td>
+                <td className="px-3 py-3">{o.status}</td>
+                <td className="px-3 py-3 text-right font-semibold tabular-nums">
+                  ${o.total}
+                </td>
+              </tr>
+            ))}
+          </tbody>
         </table>
       </div>
     </div>
