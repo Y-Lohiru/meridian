@@ -30,6 +30,7 @@ export interface ProductReview {
 }
 
 export interface ProductFilters {
+  search?: string;
   category?: string;
   color?: string;
   material?: string;

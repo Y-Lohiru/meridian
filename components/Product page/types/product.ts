@@ -1,7 +1,7 @@
 export interface ProductVariant {
-  label: string;       // e.g., "Small", "Large"
-  dimensions?: string; // e.g., "H 38 cm · Ø 24 cm"
-  price: number;       // Variant-specific price
+  label: string;       
+  dimensions?: string; 
+  price: number;       
 }
 
 export interface Product {
@@ -14,12 +14,12 @@ export interface Product {
   color?: string;
   quantity?: number;
   image_url: string;
-  images?: string[];             // Array of gallery images
-  variants?: ProductVariant[];   // Optional size variants
+  images?: string[];             
+  variants?: ProductVariant[];   
 }
 
-
 export interface ProductFilters {
+  search?: string;
   category?: string;
   color?: string;
   material?: string;
