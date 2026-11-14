@@ -1,73 +1,122 @@
-import React from "react";
+"use client";
+
+import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { Product } from "./types/product";
 
 interface ProductCardProps {
-  product?: Product;
-  isWishlisted?: boolean;
+  product: Product;
   onWishlistToggle?: (formData: FormData) => Promise<void>;
+}
+
+function isValidImageUrl(url?: string | null): url is string {
+  if (!url) return false;
+  const trimmed = url.trim();
+  if (
+    trimmed === "" ||
+    trimmed === "null" ||
+    trimmed === "undefined" ||
+    trimmed === "/placeholder.jpg"
+  ) {
+    return false;
+  }
+  return (
+    trimmed.startsWith("http://") ||
+    trimmed.startsWith("https://") ||
+    trimmed.startsWith("/")
+  );
 }
 
 export default function ProductCard({
   product,
-  isWishlisted = false,
   onWishlistToggle,
 }: ProductCardProps) {
-  if (!product || !product.id) return null;
+  const [imgError, setImgError] = useState(false);
+  const imgRef = useRef<HTMLImageElement | null>(null);
+
+  // Catch images that already failed to load during SSR before React hydrated
+  useEffect(() => {
+    const img = imgRef.current;
+    if (img && img.complete && img.naturalWidth === 0) {
+      setImgError(true);
+    }
+  }, [product.image_url]);
+
+  const showImage = isValidImageUrl(product.image_url) && !imgError;
 
   return (
-    <div className="group cursor-pointer block relative font-serif">
-      <Link href={`/shop/${product.id}`} className="block">
-        <div className="relative aspect-[3/4] bg-muted overflow-hidden mb-4">
-          <img
-            src={product.image_url} // Mapped to image_url
-            alt={product.productName}
-            className="object-cover w-full h-full group-hover:scale-[1.02] transition-transform duration-700 ease-out"
-          />
-        </div>
-      </Link>
-
+    <div className="group relative font-sans text-ink">
+      {/* Wishlist Heart Button (Preserved from your original card) */}
       {onWishlistToggle && (
-        <form action={onWishlistToggle} className="absolute top-3 right-3 z-10">
+        <form
+          action={onWishlistToggle}
+          className="absolute top-3 right-3 z-10"
+        >
           <input type="hidden" name="productId" value={product.id} />
-          <input
-            type="hidden"
-            name="isWishlisted"
-            value={isWishlisted ? "true" : "false"}
-          />
           <button
             type="submit"
-            aria-label="Wishlist item"
-            className="text-foreground bg-background rounded-full p-1.5 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+            aria-label="Toggle wishlist"
+            className="w-8 h-8 flex items-center justify-center bg-surface/85 backdrop-blur-sm border border-line text-ink hover:text-brand transition-colors cursor-pointer"
           >
             <svg
-              className={`w-3.5 h-3.5 ${isWishlisted ? "fill-foreground" : ""}`}
-              fill={isWishlisted ? "currentColor" : "none"}
+              xmlns="http://www.w3.org/2000/svg"
+              width="14"
+              height="14"
               viewBox="0 0 24 24"
+              fill="none"
               stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="1.5"
-                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-              />
+              <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
             </svg>
           </button>
         </form>
       )}
 
-      <div className="space-y-1">
-        <span className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground">
-          {product.category}
-        </span>
-        <h3 className="text-sm md:text-base font-light text-foreground tracking-tight group-hover:underline">
-          <Link href={`/shop/${product.id}`}>{product.productName}</Link>
-        </h3>
-        <p className="text-xs md:text-sm font-sans text-muted-foreground">
-          ${product.price}
-        </p>
-      </div>
+      <Link href={`/shop/${product.id}`} className="block focus:outline-none">
+        {/* Image Frame matching ProductGallery.tsx (aspect-[4/5], bg-placeholder, border-line) */}
+        <div className="relative aspect-[4/5] w-full bg-placeholder overflow-hidden border border-line mb-3.5">
+          {showImage ? (
+            <img
+              ref={imgRef}
+              src={product.image_url}
+              alt={product.productName}
+              onError={() => setImgError(true)}
+              className="w-full h-full object-cover transition-transform duration-500 ease-soft group-hover:scale-105"
+            />
+          ) : (
+            /* Exact same missing-image gradient & label as ProductGallery.tsx */
+            <div className="w-full h-full bg-placeholder flex items-center justify-center p-6">
+              <span className="eyebrow text-ink-subtle text-center opacity-75">
+                {product.productName}
+              </span>
+            </div>
+          )}
+
+          {product.quantity !== undefined && product.quantity <= 0 && (
+            <span className="absolute bottom-3 left-3 bg-brand text-on-brand px-2.5 py-1 text-[10px] eyebrow">
+              Sold Out
+            </span>
+          )}
+        </div>
+
+        {/* Product Meta */}
+        <div className="space-y-1">
+          <p className="eyebrow text-[10px] text-ink-subtle">
+            {product.category}
+          </p>
+
+          <h3 className="text-sm font-medium text-ink group-hover:text-brand transition-colors leading-snug">
+            {product.productName}
+          </h3>
+
+          <p className="text-sm font-normal text-brand">
+            ${Number(product.price).toLocaleString()}
+          </p>
+        </div>
+      </Link>
     </div>
   );
 }

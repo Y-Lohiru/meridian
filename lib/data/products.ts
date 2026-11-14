@@ -2,39 +2,6 @@ import { Product, ProductFilters } from "@/components/product detail/types/produ
 import { createClient } from "@/app/utils/supabase/server";
 import { cookies } from "next/headers";
 
-export const MOCK_PRODUCTS: Product[] = [
-  {
-    id: "1",
-    productName: "Alabaster table lamp",
-    category: "Lighting",
-    price: 540,
-    color: "Brass",
-    material: "Brass",
-    image_url:
-      "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&q=80&w=800",
-  },
-  {
-    id: "2",
-    productName: "Travertine side table",
-    category: "Furniture",
-    price: 1200,
-    color: "Natural",
-    material: "Travertine",
-    image_url:
-      "https://images.unsplash.com/photo-1538688525198-9b88f6f53126?auto=format&fit=crop&q=80&w=800",
-  },
-  {
-    id: "3",
-    productName: "Stoneware vessel",
-    category: "Ceramics",
-    price: 280,
-    color: "Charcoal",
-    material: "Stoneware",
-    image_url:
-      "https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?auto=format&fit=crop&q=80&w=800",
-  },
-];
-
 export async function getProducts(filters: ProductFilters): Promise<Product[]> {
   try {
     const cookieStore = await cookies();
@@ -73,6 +40,14 @@ export async function getProducts(filters: ProductFilters): Promise<Product[]> {
       query = query.lte("price", filters.maxPrice);
     }
 
+    //Search
+    if (filters.search && filters.search.trim() !== "") {
+      const term = filters.search.trim();
+      query = query.or(
+        `"productName".ilike.%${term}%,category.ilike.%${term}%,material.ilike.%${term}%`
+      );
+    }
+
     // Sorting
     if (filters.sort === "price-low") {
       query = query.order("price", { ascending: true });
@@ -82,9 +57,10 @@ export async function getProducts(filters: ProductFilters): Promise<Product[]> {
       query = query.order("created_at", { ascending: false });
     }
 
+
     const { data, error } = await query;
 
-    let resultList: Product[] = data && data.length > 0 ? data : MOCK_PRODUCTS;
+    let resultList: Product[] = data ?? [];
 
     // Fallback filtering if DB is empty or disconnected
     if (!data || data.length === 0) {
@@ -108,41 +84,25 @@ export async function getProducts(filters: ProductFilters): Promise<Product[]> {
       if (filters.maxPrice) {
         resultList = resultList.filter((p) => p.price <= filters.maxPrice!);
       }
+      if (filters.search && filters.search.trim() !== "") {
+        const term = filters.search.trim().toLowerCase();
+        resultList = resultList.filter(
+          (p) =>
+            p.productName.toLowerCase().includes(term) ||
+            p.category.toLowerCase().includes(term) ||
+            (p.material && p.material.toLowerCase().includes(term))
+        );
+      }
     }
 
     
     return resultList.filter((p): p is Product => Boolean(p) && Boolean(p.id));
   } catch (err) {
     console.error("Database query error, returning mock products:", err);
-    return MOCK_PRODUCTS;
+    return [];
   }
 }
 
-// Append this function inside lib/data/products.ts
-
-/*export async function getProductById(id: string): Promise<Product | null> {
-  try {
-    const cookieStore = await cookies();
-    const supabase = createClient(cookieStore);
-
-    const { data, error } = await supabase
-      .from("product")
-      .select('id, created_at, "productName", price, category, material, color, quantity, image_url')
-      .eq("id", id)
-      .single();
-
-    if (error || !data) {
-      console.warn(`Product ${id} not found in DB, checking fallback mock list:`, error?.message);
-      const mockMatch = MOCK_PRODUCTS.find((p) => p.id === id);
-      return mockMatch || null;
-    }
-
-    return data as Product;
-  } catch (err) {
-    console.error(`Error fetching product by ID (${id}):`, err);
-    return null;
-  }
-}*/
 
 export async function getProductById(id: string): Promise<Product | null> {
   try {

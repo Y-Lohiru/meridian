@@ -1,15 +1,30 @@
 "use client";
-import { addProduct } from "@/app/utils/queries/admin";
+import { addProduct, uploadProductImage } from "@/app/utils/queries/admin";
 import { useState } from "react";
 
 export default function AddProductsForm() {
-  const [name, setName] = useState("");
+  const [productName, setProductName] = useState("");
+  const [price, setPrice] = useState(0);
   const [quantity, setQuantity] = useState(0);
+  const [material, setMaterial] = useState("");
   const [color, setColor] = useState("");
-  const [category, setCategary] = useState("");
+  const [category, setCategory] = useState("");
+  const [image_file, setImageFile] = useState<File | null>(null);
 
-  function add() {
-    //addProduct();
+  async function handleAdd() {
+    const image_url = image_file
+      ? ((await uploadProductImage(image_file)) ?? undefined)
+      : undefined;
+
+    await addProduct({
+      productName,
+      price,
+      quantity,
+      category,
+      material,
+      color,
+      image_url,
+    });
   }
 
   return (
@@ -17,8 +32,8 @@ export default function AddProductsForm() {
       <div className="flex flex-row">
         <label htmlFor="">Enter product name: </label>
         <input
-          value={name}
-          onChange={(e) => setName(e.target.value)}
+          value={productName}
+          onChange={(e) => setProductName(e.target.value)}
           id="name"
           type="text"
           placeholder="product name"
@@ -53,12 +68,17 @@ export default function AddProductsForm() {
       </div>
 
       <div>
-        <label htmlFor=""></label>
-        <input type="text"></input>
+        <label htmlFor="image">Upload product image: </label>
+        <input
+          onChange={(e) => setImageFile(e.target.files?.[0] ?? null)}
+          id="image"
+          type="file"
+          accept="image/*"
+        ></input>
       </div>
 
       <div>
-        <button onClick={add} className="bg-brand text-on-brand">
+        <button onClick={handleAdd} className="bg-brand text-on-brand">
           Add
         </button>
       </div>

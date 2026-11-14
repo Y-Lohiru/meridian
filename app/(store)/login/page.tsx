@@ -1,10 +1,10 @@
 'use client';
 
 import React from 'react'
-import {createClient} from '../utils/supabase/client'
+import {createClient} from '@/app/utils/supabase/client'
 import { redirect } from 'next/dist/client/components/navigation'
 import { useState } from 'react'
-import SignupForm from '../../components/auth/signUpForm'
+import SignupForm from '@/components/auth/signUpForm'
 import SignInForm from '@/components/auth/signInForm';
 const page = () => {
  const [email, setEmail] = useState('');
