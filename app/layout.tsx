@@ -4,6 +4,8 @@ import { Bodoni_Moda, Manrope } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "@/components/checkout/CartContent";
 import CartDrawer from "@/components/checkout/CartDrawer";
+import Header from "@/components/ui/header";
+import Footer from "@/components/ui/footer";
 
 const bodoni = Bodoni_Moda({
   subsets: ["latin"],
@@ -40,7 +42,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <CartProvider>
         <body className="min-h-full flex flex-col">
+          <Header/>
           {children}
+          <Footer />
           <CartDrawer />
         </body>
       </CartProvider>

@@ -4,6 +4,7 @@ import {createClient} from '../../utils/supabase/client'
 import { redirect } from 'next/dist/client/components/navigation'
 import fetchUser from '../../utils/auth'
 import checkUser from '../../utils/auth';
+import ProfilePage from '@/components/profile/profilePage';
 
 interface Profile {
     id:string;
@@ -60,7 +61,7 @@ const changeProfile = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const supabase = createClient();
     if (user) {
-        const { error } = await supabase.from('users').update({
+        const {  error } = await supabase.from('users').update({
             fname: user.fname,
             lname: user.lname,
             email: user.email,
@@ -77,10 +78,12 @@ const changeProfile = async (e: React.FormEvent<HTMLFormElement>) => {
 
   return (
 
-    <div>
-        <h1>Profile Page</h1>
-        <a href="/track/sjdhjkh">Edit Profile</a>
+    <div>   
+        <ProfilePage/>
         <button onClick={signout}>signout</button>
+
+        {/* <h1>Profile Page</h1>
+        <a href="/track/sjdhjkh">Edit Profile</a>
         
         {user ? (
         <form onSubmit={changeProfile}>
@@ -96,7 +99,7 @@ const changeProfile = async (e: React.FormEvent<HTMLFormElement>) => {
             </form>
         ) : (
             <p>Loading...</p>
-        )}
+        )} */}
     </div>
   )
 }
