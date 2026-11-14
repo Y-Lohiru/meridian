@@ -38,10 +38,13 @@ export default function ProductPurchaseSection({
     setIsAdding(true);
     setCartError(null);
     try {
-      await addToCart({
+      addToCart({
         productId: product.id,
+        name: product.productName,
         variant: selectedVariant?.label ?? "",
+        price: activePrice,
         quantity: quantity,
+        imageUrl: product.image_url ?? "",
       });
       setAdded(true);
       setTimeout(() => {
@@ -59,7 +62,7 @@ export default function ProductPurchaseSection({
     }
   };
 
-  const { addToCart } = usecart();
+  const { addToCart, isCartLoading } = usecart();
   const [cartError, setCartError] = useState<string | null>(null);
 
   return (
@@ -171,7 +174,7 @@ export default function ProductPurchaseSection({
           <button
             type="button"
             onClick={handleAddToCart}
-            disabled={isOutOfStock || isAdding}
+            disabled={isOutOfStock || isAdding || isCartLoading}
             className={`flex-1 h-button text-xs tracking-button uppercase font-semibold text-on-brand transition-all cursor-pointer ${
               added ? "bg-emerald-800" : "bg-brand hover:bg-brand-deep"
             } disabled:opacity-50 disabled:cursor-not-allowed`}

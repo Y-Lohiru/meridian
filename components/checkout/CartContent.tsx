@@ -1,19 +1,32 @@
 "use client";
 
-import { addProductToCart, type AddCartItem } from "./cartActions";
 import React, {
   createContext,
-  useCallback,
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 
 import { createClient } from "@/app/utils/supabase/client";
 
+import {
+  syncCartToDatabase as saveCartSnapshot,
+  type CartSyncItem,
+} from "./cartActions";
+
 export interface CartItem {
   id: string;
+  productId: string;
+  name: string;
+  variant: string;
+  price: number;
+  quantity: number;
+  imageUrl: string;
+}
+
+export interface AddCartItem {
   productId: string;
   name: string;
   variant: string;
@@ -30,11 +43,14 @@ interface CartContextType {
   subtotal: number;
 
   setIsCartOpen: (open: boolean) => void;
-  addToCart: (item: AddCartItem) => Promise<void>;
-  increaseQuantity: (id: string) => Promise<void>;
-  decreaseQuantity: (id: string) => Promise<void>;
-  removeItem: (id: string) => Promise<void>;
-  refreshCart: () => Promise<void>;
+
+  addToCart: (item: AddCartItem) => void;
+  increaseQuantity: (id: string) => void;
+  decreaseQuantity: (id: string) => void;
+  removeItem: (id: string) => void;
+
+  syncCartToDatabase: () => Promise<void>;
+  clearCartAfterOrder: () => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -45,163 +61,270 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCartLoading, setIsCartLoading] = useState(true);
+  const [cartReady, setCartReady] = useState(false);
 
-  // Load cart rows from Supabase
-  const refreshCart = useCallback(async () => {
-    setIsCartLoading(true);
+  const [storageKey, setStorageKey] = useState<string | null>(null);
 
-    try {
-      const { data: rows, error: cartError } = await supabase
-        .from("cart")
-        .select("id, product_id, variant, quantity")
-        .order("created_at", { ascending: true });
+  // Tracks whether local cart differs from the database
+  const cartDirty = useRef(true);
 
-      if (cartError) throw cartError;
+  // Tracks changes during a database synchronization
+  const changeVersion = useRef(0);
 
-      if (!rows || rows.length === 0) {
-        setCartItems([]);
-        return;
+  // ----------------------------------
+  // 1. Load cart from localStorage
+  // ----------------------------------
+
+  useEffect(() => {
+    let active = true;
+    let currentKey: string | null = null;
+
+    const loadLocalCart = (userId?: string) => {
+      const key = userId ? `meridian-cart-${userId}` : "meridian-cart-guest";
+
+      if (currentKey === key) return;
+
+      currentKey = key;
+
+      try {
+        let saved = localStorage.getItem(key);
+
+        // Move a guest cart into the account's local cart
+        // when the customer signs in for the first time.
+        if (userId && saved === null) {
+          const guestCart = localStorage.getItem("meridian-cart-guest");
+
+          if (guestCart !== null) {
+            saved = guestCart;
+            localStorage.setItem(key, guestCart);
+            localStorage.removeItem("meridian-cart-guest");
+          }
+        }
+
+        const parsed = saved ? JSON.parse(saved) : [];
+
+        if (active) {
+          setCartItems(Array.isArray(parsed) ? parsed : []);
+
+          setStorageKey(key);
+
+          // Initial local snapshot must be synchronized
+          // when the customer proceeds to checkout.
+          cartDirty.current = true;
+          changeVersion.current += 1;
+
+          setCartReady(true);
+          setIsCartLoading(false);
+        }
+      } catch (error) {
+        console.error("Could not load local cart:", error);
+
+        if (active) {
+          setCartItems([]);
+          setStorageKey(key);
+          cartDirty.current = true;
+          setCartReady(true);
+          setIsCartLoading(false);
+        }
       }
+    };
 
-      // Get the corresponding product IDs
-      const productIds = [...new Set(rows.map((row) => row.product_id))];
+    // Read existing authentication session.
+    // No cart database query is performed here.
 
-      // Fetch current product information
-      const { data: products, error: productError } = await supabase
-        .from("product")
-        .select('id, "productName", price, image_url, variants')
-        .in("id", productIds);
+    supabase.auth
+      .getSession()
+      .then(({ data }) => {
+        if (active) {
+          loadLocalCart(data.session?.user.id);
+        }
+      })
+      .catch((error) => {
+        console.error(error);
 
-      if (productError) throw productError;
-
-      const productMap = new Map(
-        (products ?? []).map((product) => [product.id, product]),
-      );
-
-      // Combine cart data with product information
-      const mappedItems: CartItem[] = rows.flatMap((row) => {
-        const product = productMap.get(row.product_id);
-
-        if (!product) return [];
-
-        const variants = Array.isArray(product.variants)
-          ? product.variants
-          : [];
-
-        const selectedVariant = variants.find(
-          (variant) => variant.label === row.variant,
-        );
-
-        // Use the selected variant's price when available
-        const price = Number(selectedVariant?.price ?? product.price);
-
-        return [
-          {
-            id: row.id,
-            productId: row.product_id,
-            name: product.productName,
-            variant: row.variant || "Default",
-            price,
-            quantity: row.quantity,
-            imageUrl: product.image_url ?? "",
-          },
-        ];
+        if (active) {
+          loadLocalCart();
+        }
       });
 
-      setCartItems(mappedItems);
-    } finally {
-      setIsCartLoading(false);
-    }
-  }, [supabase]);
-
-  // Load cart when the provider starts.
-  // Also reload when the user signs in or out.
-  useEffect(() => {
-    refreshCart().catch((error) => {
-      console.error("Failed to load cart:", error);
-    });
+    // Switch local cart when customer logs in or out.
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(() => {
-      refreshCart().catch((error) => {
-        console.error("Failed to refresh cart:", error);
-      });
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      loadLocalCart(session?.user.id);
     });
 
-    return () => subscription.unsubscribe();
-  }, [supabase, refreshCart]);
+    return () => {
+      active = false;
+      subscription.unsubscribe();
+    };
+  }, [supabase]);
 
-  // Add product to cart
-  const addToCart = async (item: AddCartItem) => {
-    // Run the frontend cart action
-    await addProductToCart(item);
+  // ----------------------------------
+  // 2. Save local cart to localStorage
+  // ----------------------------------
 
-    // Refresh the cart displayed in React
-    await refreshCart();
+  useEffect(() => {
+    if (!cartReady || !storageKey) return;
 
-    // Open the cart drawer
+    localStorage.setItem(storageKey, JSON.stringify(cartItems));
+  }, [cartItems, cartReady, storageKey]);
+
+  // ----------------------------------
+  // 3. Mark cart as changed
+  // ----------------------------------
+
+  const markCartDirty = () => {
+    changeVersion.current += 1;
+    cartDirty.current = true;
+  };
+
+  // ----------------------------------
+  // 4. Add product locally
+  // ----------------------------------
+
+  const addToCart = (item: AddCartItem) => {
+    if (
+      !item.productId ||
+      !Number.isInteger(item.quantity) ||
+      item.quantity < 1
+    ) {
+      return;
+    }
+
+    const variant = item.variant || "";
+
+    const cartId = `${item.productId}::${variant}`;
+
+    markCartDirty();
+
+    setCartItems((prev) => {
+      const existing = prev.find((cartItem) => cartItem.id === cartId);
+
+      if (existing) {
+        return prev.map((cartItem) =>
+          cartItem.id === cartId
+            ? {
+                ...cartItem,
+                name: item.name,
+                price: item.price,
+                imageUrl: item.imageUrl,
+                quantity: cartItem.quantity + item.quantity,
+              }
+            : cartItem,
+        );
+      }
+
+      return [
+        ...prev,
+        {
+          id: cartId,
+          productId: item.productId,
+          name: item.name,
+          variant,
+          price: item.price,
+          quantity: item.quantity,
+          imageUrl: item.imageUrl,
+        },
+      ];
+    });
+
     setIsCartOpen(true);
   };
 
-  // Increase quantity
-  const increaseQuantity = async (id: string) => {
-    const item = cartItems.find((item) => item.id === id);
+  // ----------------------------------
+  // 5. Increase quantity locally
+  // ----------------------------------
 
-    if (!item) return;
+  const increaseQuantity = (id: string) => {
+    markCartDirty();
 
-    const { error } = await supabase
-      .from("cart")
-      .update({
-        quantity: item.quantity + 1,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", id);
-
-    if (error) {
-      console.error(error);
-      alert("Could not update cart quantity.");
-      return;
-    }
-
-    await refreshCart();
+    setCartItems((prev) =>
+      prev.map((item) =>
+        item.id === id ? { ...item, quantity: item.quantity + 1 } : item,
+      ),
+    );
   };
 
-  // Decrease quantity
-  const decreaseQuantity = async (id: string) => {
-    const item = cartItems.find((item) => item.id === id);
+  // ----------------------------------
+  // 6. Decrease quantity locally
+  // ----------------------------------
 
-    if (!item || item.quantity <= 1) return;
+  const decreaseQuantity = (id: string) => {
+    const existing = cartItems.find((item) => item.id === id);
 
-    const { error } = await supabase
-      .from("cart")
-      .update({
-        quantity: item.quantity - 1,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", id);
+    if (!existing || existing.quantity <= 1) return;
 
-    if (error) {
-      console.error(error);
-      alert("Could not update cart quantity.");
-      return;
-    }
+    markCartDirty();
 
-    await refreshCart();
+    setCartItems((prev) =>
+      prev.map((item) =>
+        item.id === id ? { ...item, quantity: item.quantity - 1 } : item,
+      ),
+    );
   };
 
-  // Remove item
-  const removeItem = async (id: string) => {
-    const { error } = await supabase.from("cart").delete().eq("id", id);
+  // ----------------------------------
+  // 7. Remove product locally
+  // ----------------------------------
 
-    if (error) {
-      console.error(error);
-      alert("Could not remove this product.");
-      return;
+  const removeItem = (id: string) => {
+    markCartDirty();
+
+    setCartItems((prev) => prev.filter((item) => item.id !== id));
+  };
+
+  // ----------------------------------
+  // 8. Synchronize cart with Supabase
+  // ----------------------------------
+
+  const syncCartToDatabase = async () => {
+    if (!cartReady) {
+      throw new Error("Cart is still loading.");
     }
 
-    await refreshCart();
+    // Avoid unnecessary database requests
+    if (!cartDirty.current) return;
+
+    const versionAtStart = changeVersion.current;
+
+    // Take a snapshot of current cart
+    const snapshot: CartSyncItem[] = cartItems.map((item) => ({
+      productId: item.productId,
+      variant: item.variant,
+      quantity: item.quantity,
+    }));
+
+    // Save snapshot to Supabase
+    await saveCartSnapshot(snapshot);
+
+    // Mark clean only when no changes happened
+    // while the database operation was running.
+
+    if (changeVersion.current === versionAtStart) {
+      cartDirty.current = false;
+    }
   };
+
+  // ----------------------------------
+  // 9. Clear cart after successful order
+  // ----------------------------------
+
+  const clearCartAfterOrder = () => {
+    changeVersion.current += 1;
+
+    // The database cart is already cleared
+    // by the existing order_product trigger.
+
+    cartDirty.current = false;
+
+    setCartItems([]);
+  };
+
+  // ----------------------------------
+  // 10. Cart calculations
+  // ----------------------------------
 
   const totalItemCount = cartItems.reduce(
     (total, item) => total + item.quantity,
@@ -220,11 +343,15 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         isCartOpen,
         isCartLoading,
         setIsCartOpen,
+
         addToCart,
         increaseQuantity,
         decreaseQuantity,
         removeItem,
-        refreshCart,
+
+        syncCartToDatabase,
+        clearCartAfterOrder,
+
         totalItemCount,
         subtotal,
       }}

@@ -1,12 +1,13 @@
 // components/checkout/checkoutform.tsx
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 import Button from "./Button";
 import { usecart } from "./CartContent";
 import { placeOrder } from "./orderActions";
+import { createClient } from "@/app/utils/supabase/client";
 
 interface CheckoutFormProps {
   deliveryMethod: string;
@@ -38,7 +39,8 @@ export default function CheckoutForm({
   //formh
   const router = useRouter();
 
-  const { cartItems, isCartLoading, refreshCart } = usecart();
+  const { cartItems, syncCartToDatabase, clearCartAfterOrder, isCartLoading } =
+    usecart();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -58,6 +60,83 @@ export default function CheckoutForm({
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [receiptFile, setReceiptFile] = useState<File | null>(null);
+
+  const [isProfileLoading, setIsProfileLoading] = useState(true);
+  const [profileLoadError, setProfileLoadError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const fetchUserDetails = async () => {
+      setIsProfileLoading(true);
+
+      try {
+        const supabase = createClient();
+
+        // 1. Get currently logged-in user
+        const {
+          data: { user },
+          error: authError,
+        } = await supabase.auth.getUser();
+
+        if (authError) {
+          throw authError;
+        }
+
+        if (!user) {
+          throw new Error("Please log in to load your saved details.");
+        }
+
+        // 2. Fetch customer information from public.users
+        const { data: profile, error: profileError } = await supabase
+          .from("users")
+          .select("email, fname, lname, address, contactno")
+          .eq("user_id", user.id)
+          .maybeSingle();
+
+        if (profileError) {
+          throw profileError;
+        }
+
+        if (cancelled) return;
+
+        // 3. Populate checkout form
+        setFormData((prev) => ({
+          ...prev,
+
+          email: prev.email || profile?.email || user.email || "",
+
+          firstName: prev.firstName || profile?.fname || "",
+
+          lastName: prev.lastName || profile?.lname || "",
+
+          address: prev.address || profile?.address || "",
+
+          phone: prev.phone || profile?.contactno || "",
+        }));
+      } catch (error) {
+        console.error("Failed to fetch customer details:", error);
+
+        if (!cancelled) {
+          setProfileLoadError(
+            error instanceof Error
+              ? error.message
+              : "Unable to load customer details.",
+          );
+        }
+      } finally {
+        if (!cancelled) {
+          setIsProfileLoading(false);
+        }
+      }
+    };
+
+    fetchUserDetails();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const handleButtonClick = () => {
     fileInputRef.current?.click();
@@ -90,6 +169,8 @@ export default function CheckoutForm({
       // Send checkout form information
       // to the frontend order function
 
+      await syncCartToDatabase();
+
       const result = await placeOrder({
         email: formData.email,
 
@@ -121,9 +202,7 @@ export default function CheckoutForm({
       // Refresh React cart state
       // The database trigger has cleared the cart.
 
-      await refreshCart().catch((error) => {
-        console.error("Cart refresh failed:", error);
-      });
+      clearCartAfterOrder();
 
       // Navigate to success page
       router.push(
@@ -144,6 +223,17 @@ export default function CheckoutForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-10 text-ink">
+      {isProfileLoading && (
+        <p className="text-sm text-ink-subtle">
+          Loading your saved customer details...
+        </p>
+      )}
+      {profileLoadError && (
+        <p className="text-sm text-red-600" role="alert">
+          {profileLoadError}
+        </p>
+      )}
+
       {submitError && (
         <div
           className="bg-red-50 border border-red-200 text-red-700 p-4 text-sm"
@@ -468,9 +558,18 @@ export default function CheckoutForm({
         <Button
           type="submit"
           fullWidth
-          disabled={isSubmitting || isCartLoading || cartItems.length === 0}
+          disabled={
+            isSubmitting ||
+            isCartLoading ||
+            isProfileLoading ||
+            cartItems.length === 0
+          }
         >
-          {isSubmitting ? "Placing Order..." : `Place Order — $${grandTotal}`}
+          {isProfileLoading
+            ? "Loading Details..."
+            : isSubmitting
+              ? "Placing Order..."
+              : `Place Order — $${grandTotal}`}
         </Button>
         <p className="text-xs text-center text-ink-subtle mt-3">
           By placing your order you agree to our Terms of Sale and Privacy

@@ -1,88 +1,99 @@
-
 import { createClient } from "@/app/utils/supabase/client";
 
-export interface AddCartItem {
+export interface CartSyncItem {
   productId: string;
   variant: string;
   quantity: number;
 }
 
-export async function addProductToCart(
-  item: AddCartItem
+// Synchronize the complete local cart with Supabase
+export async function syncCartToDatabase(
+  items: CartSyncItem[]
 ): Promise<void> {
 
   const supabase = createClient();
 
-  // 1. Get the logged-in customer
+  // 1. Get authenticated user
   const {
     data: { user },
     error: authError,
   } = await supabase.auth.getUser();
 
-  if (authError) {
-    throw new Error(authError.message);
+  if (authError || !user) {
+    throw new Error("Please log in before proceeding to checkout.");
   }
 
-  if (!user) {
-    throw new Error("Please log in before adding to your cart.");
-  }
-
-  // 2. Validate input
-  if (
-    !item.productId ||
-    !Number.isInteger(item.quantity) ||
-    item.quantity < 1
-  ) {
-    throw new Error("Invalid product or quantity.");
-  }
-
-  const variant = item.variant.trim();
-
-  // 3. Check whether this product and variant
-  // already exist in this customer's cart
-  const { data: existingItem, error: selectError } =
-    await supabase
-      .from("cart")
-      .select("id, quantity")
-      .eq("user_id", user.id)
-      .eq("product_id", item.productId)
-      .eq("variant", variant)
-      .maybeSingle();
-
-  if (selectError) {
-    throw new Error(selectError.message);
-  }
-
-  // 4. If item exists, increase its quantity
-  if (existingItem) {
-
-    const { error: updateError } = await supabase
-      .from("cart")
-      .update({
-        quantity: existingItem.quantity + item.quantity,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", existingItem.id)
-      .eq("user_id", user.id);
-
-    if (updateError) {
-      throw new Error(updateError.message);
+  // 2. Validate cart items
+  for (const item of items) {
+    if (
+      !item.productId ||
+      !Number.isInteger(item.quantity) ||
+      item.quantity < 1
+    ) {
+      throw new Error("Invalid cart item.");
     }
+  }
 
-  } else {
+  // 3. Get existing database cart
+  const { data: existingRows, error: fetchError } = await supabase
+    .from("cart")
+    .select("id, product_id, variant")
+    .eq("user_id", user.id);
 
-    // 5. Otherwise insert a new cart record
-    const { error: insertError } = await supabase
+  if (fetchError) {
+    throw new Error(fetchError.message);
+  }
+
+  // 4. Prepare local cart for Supabase
+  const rows = items.map((item) => ({
+    user_id: user.id,
+    product_id: item.productId,
+    variant: item.variant || "",
+    quantity: item.quantity,
+    updated_at: new Date().toISOString(),
+  }));
+
+  // 5. Insert new records or update existing records
+  if (rows.length > 0) {
+
+    const { error: upsertError } = await supabase
       .from("cart")
-      .insert({
-        user_id: user.id,
-        product_id: item.productId,
-        variant: variant,
-        quantity: item.quantity,
+      .upsert(rows, {
+        onConflict: "user_id,product_id,variant",
       });
 
-    if (insertError) {
-      throw new Error(insertError.message);
+    if (upsertError) {
+      throw new Error(upsertError.message);
+    }
+  }
+
+  // 6. Identify items removed from the local cart
+  const localKeys = new Set(
+    items.map(
+      (item) => `${item.productId}::${item.variant || ""}`
+    )
+  );
+
+  const staleIds = (existingRows ?? [])
+    .filter(
+      (row) =>
+        !localKeys.has(
+          `${row.product_id}::${row.variant || ""}`
+        )
+    )
+    .map((row) => row.id);
+
+  // 7. Delete removed items from Supabase
+  if (staleIds.length > 0) {
+
+    const { error: deleteError } = await supabase
+      .from("cart")
+      .delete()
+      .eq("user_id", user.id)
+      .in("id", staleIds);
+
+    if (deleteError) {
+      throw new Error(deleteError.message);
     }
   }
 }
