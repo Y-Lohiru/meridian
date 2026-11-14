@@ -4,6 +4,7 @@
 import React, { useState } from "react";
 import { Product, ProductVariant } from "./types/product";
 import ProductInfo from "./productInfo";
+import { usecart } from "@/components/checkout/CartContent";
 
 interface ProductPurchaseSectionProps {
   product: Product;
@@ -22,7 +23,7 @@ export default function ProductPurchaseSection({
   const hasVariants = variants.length > 0;
 
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(
-    hasVariants ? variants[0] : null
+    hasVariants ? variants[0] : null,
   );
   const [quantity, setQuantity] = useState(1);
   const [isAdding, setIsAdding] = useState(false);
@@ -32,15 +33,37 @@ export default function ProductPurchaseSection({
   const totalPrice = activePrice * quantity;
   const isOutOfStock = product.quantity !== undefined && product.quantity <= 0;
 
-  const handleAddToCart = () => {
-    if (isOutOfStock) return;
+  const handleAddToCart = async () => {
+    if (isOutOfStock || isAdding) return;
     setIsAdding(true);
-    setTimeout(() => {
-      setIsAdding(false);
+    setCartError(null);
+    try {
+      addToCart({
+        productId: product.id,
+        name: product.productName,
+        variant: selectedVariant?.label ?? "",
+        price: activePrice,
+        quantity: quantity,
+        imageUrl: product.image_url ?? "",
+      });
       setAdded(true);
-      setTimeout(() => setAdded(false), 2500);
-    }, 400);
+      setTimeout(() => {
+        setAdded(false);
+      }, 2500);
+    } catch (error) {
+      console.error("Add to cart failed:", error);
+      setCartError(
+        error instanceof Error
+          ? error.message
+          : "Unable to add product to cart.",
+      );
+    } finally {
+      setIsAdding(false);
+    }
   };
+
+  const { addToCart, isCartLoading } = usecart();
+  const [cartError, setCartError] = useState<string | null>(null);
 
   return (
     <div className="space-y-6">
@@ -151,7 +174,7 @@ export default function ProductPurchaseSection({
           <button
             type="button"
             onClick={handleAddToCart}
-            disabled={isOutOfStock || isAdding}
+            disabled={isOutOfStock || isAdding || isCartLoading}
             className={`flex-1 h-button text-xs tracking-button uppercase font-semibold text-on-brand transition-all cursor-pointer ${
               added ? "bg-emerald-800" : "bg-brand hover:bg-brand-deep"
             } disabled:opacity-50 disabled:cursor-not-allowed`}
@@ -159,12 +182,18 @@ export default function ProductPurchaseSection({
             {isAdding
               ? "Adding..."
               : added
-              ? "✓ Added to Bag"
-              : isOutOfStock
-              ? "Sold Out"
-              : `ADD TO BAG — $${totalPrice.toLocaleString()}`}
+                ? "✓ Added to Bag"
+                : isOutOfStock
+                  ? "Sold Out"
+                  : `ADD TO BAG — $${totalPrice.toLocaleString()}`}
           </button>
         </div>
+
+        {cartError && (
+          <p className="text-sm text-red-600" role="alert">
+            {cartError}
+          </p>
+        )}
 
         {/* Dark Espresso Box for Delivery & Gift Wrapping */}
         <div className="bg-brand text-on-brand p-5 space-y-3.5 text-xs">
