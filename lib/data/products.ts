@@ -1,6 +1,7 @@
 import { Product, ProductFilters } from "@/components/product detail/types/product";
 import { createClient } from "@/app/utils/supabase/server";
 import { cookies } from "next/headers";
+import { ProductReview } from "@/components/product detail/types/product";
 
 export async function getProducts(filters: ProductFilters): Promise<Product[]> {
   try {
