@@ -1,8 +1,7 @@
-// components/Product page/ProductInfo.tsx
 "use client";
 
 import React, { useState } from "react";
-import { Product } from "./types/product";
+import { Product } from "@/components/product detail/types/product";
 
 interface ProductInfoProps {
   product: Product;
@@ -17,6 +16,7 @@ export default function ProductInfo({ product }: ProductInfoProps) {
 
   return (
     <div className="border-t border-line text-xs font-sans pt-2">
+      {/* Details Tab — Connected to Supabase `details`, `material`, and `color` */}
       <div className="border-b border-line py-4">
         <button
           type="button"
@@ -26,17 +26,39 @@ export default function ProductInfo({ product }: ProductInfoProps) {
           <span>Details</span>
           <span className="text-sm font-light">{openTab === "details" ? "−" : "+"}</span>
         </button>
+
         {openTab === "details" && (
-          <div className="mt-3 text-ink-muted leading-relaxed space-y-1.5 font-sans">
-            <p>Solid alabaster shade and base, hand-turned and polished.</p>
-            <p>Brushed brass fittings with a linen-wrapped cord.</p>
-            <p>Dimmable; takes one E26 LED bulb, included.</p>
-            {product.color && <p>Color: <strong className="text-ink font-normal">{product.color}</strong></p>}
-            {product.material && <p>Material: <strong className="text-ink font-normal">{product.material}</strong></p>}
+          <div className="mt-3 text-ink-muted leading-relaxed space-y-2 whitespace-pre-line">
+            <p>
+              {product.details?.trim() ||
+                "Hand-finished by small workshops and built for everyday longevity."}
+            </p>
+
+            {(product.material || product.color) && (
+              <ul className="pt-1 space-y-1 text-ink-subtle">
+                {product.material && (
+                  <li>
+                    Material:{" "}
+                    <strong className="text-ink font-normal">
+                      {product.material}
+                    </strong>
+                  </li>
+                )}
+                {product.color && (
+                  <li>
+                    Color:{" "}
+                    <strong className="text-ink font-normal">
+                      {product.color}
+                    </strong>
+                  </li>
+                )}
+              </ul>
+            )}
           </div>
         )}
       </div>
 
+      {/* Care Tab */}
       <div className="border-b border-line py-4">
         <button
           type="button"
@@ -46,13 +68,18 @@ export default function ProductInfo({ product }: ProductInfoProps) {
           <span>Care</span>
           <span className="text-sm font-light">{openTab === "care" ? "−" : "+"}</span>
         </button>
+
         {openTab === "care" && (
-          <div className="mt-3 text-ink-muted leading-relaxed space-y-1.5 font-sans">
-            <p>Wipe clean with a soft dry cloth. Avoid harsh chemicals.</p>
+          <div className="mt-3 text-ink-muted leading-relaxed space-y-1.5">
+            <p>
+              Wipe clean with a soft, dry cloth. Avoid harsh chemical cleaners or
+              prolonged direct moisture.
+            </p>
           </div>
         )}
       </div>
 
+      {/* Delivery & Returns Tab */}
       <div className="border-b border-line py-4">
         <button
           type="button"
@@ -62,9 +89,13 @@ export default function ProductInfo({ product }: ProductInfoProps) {
           <span>Delivery & Returns</span>
           <span className="text-sm font-light">{openTab === "shipping" ? "−" : "+"}</span>
         </button>
+
         {openTab === "shipping" && (
-          <div className="mt-3 text-ink-muted leading-relaxed space-y-1.5 font-sans">
-            <p>Complimentary shipping on orders over $300. 30-day free returns.</p>
+          <div className="mt-3 text-ink-muted leading-relaxed space-y-1.5">
+            <p>
+              Complimentary standard shipping on orders over $300. Free returns
+              within 30 days.
+            </p>
           </div>
         )}
       </div>
