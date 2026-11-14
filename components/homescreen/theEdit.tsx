@@ -83,7 +83,7 @@ export default function TheEdit() {
 
   return (
     <section id="edit" className="bg-surface-cream py-14 md:py-28">
-      <div className="mx-auto max-w-[85rem] px-4 md:px-10">
+      <div className="mx-auto max-w-site px-4 md:px-10">
 
         <p className="eyebrow mb-4 text-brand-umber">
           MOST WANTED THIS SEASON

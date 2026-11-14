@@ -2,9 +2,9 @@ import Link from "next/link"
 
 export default function Header() {
     return (
-        <div className="m-2.5 flex flex-row items-center justify-between">
+        <div className="m-2.5 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex flex-col">
-                <span className="text-brand text-4xl">Products</span>
+                <span className="text-brand text-3xl sm:text-4xl">Products</span>
                 <span className="text-sm text-black/50">Manage your store's products and stock</span>
             </div>
             <Link
