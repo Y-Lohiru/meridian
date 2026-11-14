@@ -33,15 +33,34 @@ export default function ProductPurchaseSection({
   const totalPrice = activePrice * quantity;
   const isOutOfStock = product.quantity !== undefined && product.quantity <= 0;
 
-  const handleAddToCart = () => {
-    if (isOutOfStock) return;
+  const handleAddToCart = async () => {
+    if (isOutOfStock || isAdding) return;
     setIsAdding(true);
-    setTimeout(() => {
-      setIsAdding(false);
+    setCartError(null);
+    try {
+      await addToCart({
+        productId: product.id,
+        variant: selectedVariant?.label ?? "",
+        quantity: quantity,
+      });
       setAdded(true);
-      setTimeout(() => setAdded(false), 2500);
-    }, 400);
+      setTimeout(() => {
+        setAdded(false);
+      }, 2500);
+    } catch (error) {
+      console.error("Add to cart failed:", error);
+      setCartError(
+        error instanceof Error
+          ? error.message
+          : "Unable to add product to cart.",
+      );
+    } finally {
+      setIsAdding(false);
+    }
   };
+
+  const { addToCart } = usecart();
+  const [cartError, setCartError] = useState<string | null>(null);
 
   return (
     <div className="space-y-6">
@@ -166,6 +185,12 @@ export default function ProductPurchaseSection({
                   : `ADD TO BAG — $${totalPrice.toLocaleString()}`}
           </button>
         </div>
+
+        {cartError && (
+          <p className="text-sm text-red-600" role="alert">
+            {cartError}
+          </p>
+        )}
 
         {/* Dark Espresso Box for Delivery & Gift Wrapping */}
         <div className="bg-brand text-on-brand p-5 space-y-3.5 text-xs">

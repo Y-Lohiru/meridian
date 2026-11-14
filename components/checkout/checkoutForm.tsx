@@ -1,7 +1,12 @@
 // components/checkout/checkoutform.tsx
 "use client";
+
 import React, { useState, useRef } from "react";
+import { useRouter } from "next/navigation";
+
 import Button from "./Button";
+import { usecart } from "./CartContent";
+import { placeOrder } from "./orderActions";
 
 interface CheckoutFormProps {
   deliveryMethod: string;
@@ -30,6 +35,15 @@ export default function CheckoutForm({
     paymentMethod: "cod",
   });
 
+  //formh
+  const router = useRouter();
+
+  const { cartItems, isCartLoading, refreshCart } = usecart();
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
@@ -56,13 +70,88 @@ export default function CheckoutForm({
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    alert("Order placed successfully with Meridian!Total: $${grandTotal}");
+
+    setSubmitError(null);
+
+    if (isCartLoading) {
+      return;
+    }
+
+    if (cartItems.length === 0) {
+      setSubmitError("Your cart is empty.");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      // Send checkout form information
+      // to the frontend order function
+
+      const result = await placeOrder({
+        email: formData.email,
+
+        firstName: formData.firstName,
+
+        lastName: formData.lastName,
+
+        address: formData.address,
+
+        apartment: formData.apartment,
+
+        city: formData.city,
+
+        country: formData.country,
+
+        postcode: formData.postcode,
+
+        phone: formData.phone,
+
+        deliveryMethod: deliveryMethod,
+
+        paymentMethod: formData.paymentMethod,
+
+        giftWrap: formData.giftWrap,
+      });
+
+      console.log("Order successfully created:", result.orderId);
+
+      // Refresh React cart state
+      // The database trigger has cleared the cart.
+
+      await refreshCart().catch((error) => {
+        console.error("Cart refresh failed:", error);
+      });
+
+      // Navigate to success page
+      router.push(
+        `/order-success?orderId=${encodeURIComponent(result.orderId)}`,
+      );
+    } catch (error) {
+      console.error("Checkout error:", error);
+
+      setSubmitError(
+        error instanceof Error
+          ? error.message
+          : "Something went wrong while placing your order.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-10 text-ink">
+      {submitError && (
+        <div
+          className="bg-red-50 border border-red-200 text-red-700 p-4 text-sm"
+          role="alert"
+        >
+          {submitError}
+        </div>
+      )}
       {/* 01 Contact */}
       <section className="space-y-4">
         <h2 className="text-lg font-display border-b border-line pb-3">
@@ -376,8 +465,12 @@ export default function CheckoutForm({
 
       {/* Submit CTA */}
       <div className="pt-4">
-        <Button type="submit" fullWidth>
-          Place Order — ${grandTotal}
+        <Button
+          type="submit"
+          fullWidth
+          disabled={isSubmitting || isCartLoading || cartItems.length === 0}
+        >
+          {isSubmitting ? "Placing Order..." : `Place Order — $${grandTotal}`}
         </Button>
         <p className="text-xs text-center text-ink-subtle mt-3">
           By placing your order you agree to our Terms of Sale and Privacy

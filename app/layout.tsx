@@ -38,12 +38,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} ${bodoni.variable} ${manrope.variable} h-full antialiased`}
     >
-      <CartProvider>
-        <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col">
+        <CartProvider>
           {children}
           <CartDrawer />
-        </body>
-      </CartProvider>
+        </CartProvider>
+      </body>
     </html>
   );
 }
