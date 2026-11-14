@@ -1,7 +1,13 @@
 // components/checkout/checkoutform.tsx
 "use client";
-import React, { useState, useRef } from "react";
+
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+
 import Button from "./Button";
+import { usecart } from "./CartContent";
+import { placeOrder } from "./orderActions";
+import { createClient } from "@/app/utils/supabase/client";
 
 interface CheckoutFormProps {
   deliveryMethod: string;
@@ -30,6 +36,16 @@ export default function CheckoutForm({
     paymentMethod: "cod",
   });
 
+  //formh
+  const router = useRouter();
+
+  const { cartItems, syncCartToDatabase, clearCartAfterOrder, isCartLoading } =
+    usecart();
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
@@ -42,27 +58,175 @@ export default function CheckoutForm({
     }
   };
 
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [receiptFile, setReceiptFile] = useState<File | null>(null);
+  const [isProfileLoading, setIsProfileLoading] = useState(true);
+  const [profileLoadError, setProfileLoadError] = useState<string | null>(null);
 
-  const handleButtonClick = () => {
-    fileInputRef.current?.click();
-  };
+  useEffect(() => {
+    let cancelled = false;
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setReceiptFile(file);
-    }
-  };
+    const fetchUserDetails = async () => {
+      setIsProfileLoading(true);
 
-  const handleSubmit = (e: React.FormEvent) => {
+      try {
+        const supabase = createClient();
+
+        const {
+          data: { user },
+          error: authError,
+        } = await supabase.auth.getUser();
+
+        if (authError) {
+          throw authError;
+        }
+
+        if (!user) {
+          throw new Error("Please log in to load your saved details.");
+        }
+
+        // 2. Fetch customer information from public.users
+        const { data: profile, error: profileError } = await supabase
+          .from("users")
+          .select("email, fname, lname, address, contactno")
+          .eq("user_id", user.id)
+          .maybeSingle();
+
+        if (profileError) {
+          throw profileError;
+        }
+
+        if (cancelled) return;
+
+        // 3. Populate checkout form
+        setFormData((prev) => ({
+          ...prev,
+
+          email: prev.email || profile?.email || user.email || "",
+
+          firstName: prev.firstName || profile?.fname || "",
+
+          lastName: prev.lastName || profile?.lname || "",
+
+          address: prev.address || profile?.address || "",
+
+          phone: prev.phone || profile?.contactno || "",
+        }));
+      } catch (error) {
+        console.error("Failed to fetch customer details:", error);
+
+        if (!cancelled) {
+          setProfileLoadError(
+            error instanceof Error
+              ? error.message
+              : "Unable to load customer details.",
+          );
+        }
+      } finally {
+        if (!cancelled) {
+          setIsProfileLoading(false);
+        }
+      }
+    };
+
+    fetchUserDetails();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    alert("Order placed successfully with Meridian!Total: $${grandTotal}");
+
+    setSubmitError(null);
+
+    if (isCartLoading) {
+      return;
+    }
+
+    if (cartItems.length === 0) {
+      setSubmitError("Your cart is empty.");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      // Send checkout form information
+      // to the frontend order function
+
+      await syncCartToDatabase();
+
+      const result = await placeOrder({
+        email: formData.email,
+
+        firstName: formData.firstName,
+
+        lastName: formData.lastName,
+
+        address: formData.address,
+
+        apartment: formData.apartment,
+
+        city: formData.city,
+
+        country: formData.country,
+
+        postcode: formData.postcode,
+
+        phone: formData.phone,
+
+        deliveryMethod: deliveryMethod,
+
+        paymentMethod: formData.paymentMethod,
+
+        giftWrap: formData.giftWrap,
+      });
+
+      console.log("Order successfully created:", result.orderId);
+
+      // Refresh React cart state
+      // The database trigger has cleared the cart.
+
+      clearCartAfterOrder();
+
+      // Navigate to success page
+      router.push(
+        `/order-success?orderId=${encodeURIComponent(result.orderId)}`,
+      );
+    } catch (error) {
+      console.error("Checkout error:", error);
+
+      setSubmitError(
+        error instanceof Error
+          ? error.message
+          : "Something went wrong while placing your order.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-10 text-ink">
+      {isProfileLoading && (
+        <p className="text-sm text-ink-subtle">
+          Loading your saved customer details...
+        </p>
+      )}
+      {profileLoadError && (
+        <p className="text-sm text-red-600" role="alert">
+          {profileLoadError}
+        </p>
+      )}
+
+      {submitError && (
+        <div
+          className="bg-red-50 border border-red-200 text-red-700 p-4 text-sm"
+          role="alert"
+        >
+          {submitError}
+        </div>
+      )}
       {/* 01 Contact */}
       <section className="space-y-4">
         <h2 className="text-lg font-display border-b border-line pb-3">
@@ -85,7 +249,7 @@ export default function CheckoutForm({
             className="w-full bg-transparent border border-line p-3 text-sm focus:outline-none focus:border-brand"
           />
         </div>
-        <div className="flex items-center space-x-3 pt-1">
+        {/*<div className="flex items-center space-x-3 pt-1">
           <input
             type="checkbox"
             name="emailUpdates"
@@ -97,7 +261,7 @@ export default function CheckoutForm({
           <label htmlFor="emailUpdates" className="text-sm text-ink-muted">
             Email me about new collections and private sales
           </label>
-        </div>
+        </div>*/}
       </section>
 
       {/* 02 Delivery Address */}
@@ -288,7 +452,6 @@ export default function CheckoutForm({
         </div>
       </section>
 
-      {/* 04 Payment */}
       <section className="space-y-4">
         <h2 className="text-lg font-display border-b border-line pb-3">
           <span className="text-xs font-sans tracking-widest text-ink-subtle block mb-1">
@@ -296,88 +459,79 @@ export default function CheckoutForm({
           </span>
           Payment
         </h2>
-        <div className="space-y-3">
-          {[
-            {
-              id: "cod",
-              title: "Cash on delivery",
-              desc: "Pay the courier in cash when your order arrives",
-            },
-            {
-              id: "bank",
-              title: "Bank transfer",
-              desc: "Transfer to our account, then upload your receipt",
-            },
-          ].map((pay) => (
-            <label
-              key={pay.id}
-              className={`block p-4 border cursor-pointer transition-all ${
-                formData.paymentMethod === pay.id
-                  ? "border-brand bg-surface-selected"
-                  : "border-line"
-              }`}
-            >
-              <div className="flex items-center space-x-3">
-                <input
-                  type="radio"
-                  name="paymentMethod"
-                  value={pay.id}
-                  checked={formData.paymentMethod === pay.id}
-                  onChange={handleChange}
-                  className="accent-brand"
-                />
-                <span className="text-sm font-medium">{pay.title}</span>
-              </div>
-              <p className="text-xs text-ink-subtle mt-1 ml-7">{pay.desc}</p>
-            </label>
-          ))}
-        </div>
 
-        {(formData.paymentMethod === "cod" && (
-          <div className="bg-surface-selected p-4 text-xs text-ink-muted space-y-1">
-            <p>
-              • We&apos;ll call or text the phone number above to confirm your
-              order before we dispatch it.
-            </p>
-            <p>
-              • Pay the courier in cash when your order arrives. Please have the
-              exact amount ready.
-            </p>
-          </div>
-        )) ||
-          (formData.paymentMethod === "bank" && (
-            <div className="bg-surface-selected p-4 text-xs text-ink-muted space-y-1">
-              <p>Uplaod the recipt of the bank transfer</p>
-              <p>Bank Names-***********</p>
-              <p>Bank Accounts NUmbers-***********</p>
-              {/* Hidden native file input tied to useRef */}
+        <div className="space-y-3">
+          {/* Cash on Delivery */}
+          <label
+            className={`block p-4 border cursor-pointer transition-all ${
+              formData.paymentMethod === "cod"
+                ? "border-brand bg-surface-selected"
+                : "border-line"
+            }`}
+          >
+            <div className="flex items-center space-x-3">
               <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleFileChange}
-                className="hidden"
-                accept="image/*,.pdf"
+                type="radio"
+                name="paymentMethod"
+                value="cod"
+                checked={formData.paymentMethod === "cod"}
+                onChange={handleChange}
+                className="accent-brand"
               />
 
-              {/* Custo Button that triggers the hidden input */}
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={handleButtonClick}
-                fullWidth
-              >
-                {receiptFile
-                  ? `Selected: ${receiptFile.name}`
-                  : "Upload Receipt"}
-              </Button>
+              <span className="text-sm font-medium">Cash on Delivery</span>
             </div>
-          ))}
+
+            <p className="text-xs text-ink-subtle mt-1 ml-7">
+              Pay the courier in cash when your order arrives.
+            </p>
+          </label>
+
+          {/* Card on Delivery */}
+          <label
+            className={`block p-4 border cursor-pointer transition-all ${
+              formData.paymentMethod === "card_on_delivery"
+                ? "border-brand bg-surface-selected"
+                : "border-line"
+            }`}
+          >
+            <div className="flex items-center space-x-3">
+              <input
+                type="radio"
+                name="paymentMethod"
+                value="card_on_delivery"
+                checked={formData.paymentMethod === "card_on_delivery"}
+                onChange={handleChange}
+                className="accent-brand"
+              />
+
+              <span className="text-sm font-medium">Card on Delivery</span>
+            </div>
+
+            <p className="text-xs text-ink-subtle mt-1 ml-7">
+              Pay using a debit or credit card when your order arrives.
+            </p>
+          </label>
+        </div>
       </section>
 
       {/* Submit CTA */}
       <div className="pt-4">
-        <Button type="submit" fullWidth>
-          Place Order — ${grandTotal}
+        <Button
+          type="submit"
+          fullWidth
+          disabled={
+            isSubmitting ||
+            isCartLoading ||
+            isProfileLoading ||
+            cartItems.length === 0
+          }
+        >
+          {isProfileLoading
+            ? "Loading Details..."
+            : isSubmitting
+              ? "Placing Order..."
+              : `Place Order — $${grandTotal}`}
         </Button>
         <p className="text-xs text-center text-ink-subtle mt-3">
           By placing your order you agree to our Terms of Sale and Privacy

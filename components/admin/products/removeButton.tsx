@@ -7,7 +7,14 @@ import { FiTrash2 } from "react-icons/fi";
 export default function RemoveButton({ id }: { id: string }) {
   async function remove() {
     if (!confirm("Are you sure you want to remove this product?")) return;
-    await removeProduct(id);
+    const status = await removeProduct(id);
+
+    if (!status) {
+      alert("Could not remove product.")
+    }
+
+    refresh();
+    return true;
   }
 
   return (
