@@ -8,6 +8,7 @@ import ProfileIcon from "./profileIcon";
 import { MdOutlineDashboard } from "react-icons/md";
 import { IoBagOutline } from "react-icons/io5";
 import { BsBoxSeam } from "react-icons/bs";
+import SignOutButton from "./auth/signOutButton";
 
 export default function SideBar() {
   const pathname = usePathname();
@@ -55,6 +56,7 @@ export default function SideBar() {
 
       <div className="mt-auto border-t border-white/15 pt-4">
         <ProfileIcon />
+        <SignOutButton />
       </div>
 
 

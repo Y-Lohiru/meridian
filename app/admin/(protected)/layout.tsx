@@ -14,9 +14,9 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
   }
 
   const { data: profile } = await supabase
-    .from("users")
+    .from("roles")
     .select("role")
-    .eq("user_id", user.id)
+    .eq("userid", user.id)
     .single();
 
   if (profile?.role !== "admin") {
