@@ -145,7 +145,7 @@
     @apply font-sans; }
   body { font-family: var(--font-sans);
     @apply bg-background text-foreground; }
-  input, select, textarea { font-size: 16px; } /* stops iOS zoom on focus */
+  input, select, textarea { font-size: 16px;border: 1px solid var(--color-border); } /* stops iOS zoom on focus */
   ::placeholder { color: var(--color-ink-subtle); }
   input[type="checkbox"], input[type="radio"] { accent-color: var(--color-brand); }
   :focus-visible { outline: 2px solid var(--color-brand); outline-offset: 2px; }

@@ -10,21 +10,29 @@ export default function AddProductsForm() {
 
   function add() {
     //addProduct();
-
-
   }
-
 
   return (
     <div className="flex flex-col">
       <div className="flex flex-row">
         <label htmlFor="">Enter product name: </label>
-        <input value={name} onChange={(e) => setName(e.target.value)} id="name" type="text" placeholder="product name"></input>
+        <input
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          id="name"
+          type="text"
+          placeholder="product name"
+        ></input>
       </div>
 
       <div className="flex flex-row">
         <label htmlFor="">Quantity</label>
-        <input value={quantity} onChange={(e) => setQuantity(parseInt(e.target.value))} id="quantity" type="number"></input>
+        <input
+          value={quantity}
+          onChange={(e) => setQuantity(parseInt(e.target.value))}
+          id="quantity"
+          type="number"
+        ></input>
       </div>
 
       <div className="flex flex-row">
@@ -34,7 +42,14 @@ export default function AddProductsForm() {
 
       <div className="flex flex-row">
         <label htmlFor="">Enter category: </label>
-        <input type="dro"></input>
+        <select id="category" name="category" required>
+          <option value="Formal">Formal</option>
+          <option value="Boots">Boots</option>
+          <option value="Loafers">Loafers</option>
+          <option value="Sneakers">Sneakers</option>
+          <option value="Heels">Heels</option>
+          <option value="Sandals">Sandals</option>
+        </select>
       </div>
 
       <div>
@@ -43,7 +58,9 @@ export default function AddProductsForm() {
       </div>
 
       <div>
-        <button onClick={add} className="bg-brand text-on-brand">Add</button>
+        <button onClick={add} className="bg-brand text-on-brand">
+          Add
+        </button>
       </div>
     </div>
   );

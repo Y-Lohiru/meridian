@@ -5,16 +5,21 @@ export default function ProfileIcon() {
   const name = "Name";
 
   return (
-    <div className="text-white absolute bottom-0 m-2.5">
-      <hr />
-      <Link href={"/profile"}>
-        <div className="border m-1.5 text-black bg-on-brand w-8 h-8 rounded-full pl-2.5">
+    <div className="flex flex-col gap-4 px-3 text-white">
+      <Link
+        href={"/profile"}
+        className="flex flex-row items-center gap-3 rounded-md hover:opacity-90"
+      >
+        <div className="flex items-center justify-center size-9 shrink-0 rounded-full bg-on-brand text-brand text-sm font-semibold">
           {letter}
         </div>
-      </Link>
 
-      <div>{name}</div>
-      <span>Store admin</span>
+        <div className="flex flex-col min-w-0">
+          <span className="text-sm font-semibold truncate">{name}</span>
+          <span className="text-xs text-white/60">Store admin</span>
+        </div>
+        
+      </Link>
     </div>
   );
 }
