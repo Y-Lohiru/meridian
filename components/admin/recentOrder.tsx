@@ -51,8 +51,8 @@ export default async function RecentOrder() {
   return (
     <div className="bg-on-brand p-3 border rounded-2xl">
       <span className="text-brand font-semibold">Recent Orders</span>
-      <div>
-        <table className="w-full">
+      <div className="overflow-x-auto">
+        <table className="w-full whitespace-nowrap">
           <tr>
             {headers.map((header) => (
               <th className="text-brand font-semibold">{header}</th>

@@ -13,10 +13,10 @@ export default async function OrderList() {
   ];
 
   return (
-    <div className="m-2.5 bg-on-brand border rounded-2xl p-4">
+    <div className="m-2.5 bg-on-brand border rounded-2xl p-3 sm:p-4">
       <span className="mb-3 text-lg font-semibold">Orders</span>
       <div className="overflow-x-auto">
-        <table className="w-full text-base text-left">
+        <table className="w-full text-sm sm:text-base text-left whitespace-nowrap">
           <thead className="border-b">
             <tr>
               {headers.map((header) => (

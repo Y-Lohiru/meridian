@@ -9,7 +9,7 @@ export default function AdminDashboard() {
     <div>
       <AdminHeader />
       <SummarySection />
-      <div className="flex flex-row justify-between">
+      <div className="flex flex-col lg:flex-row justify-between">
         <div className="min-w-0 flex-1 m-2.5 flex">
           <Graph />
         </div>

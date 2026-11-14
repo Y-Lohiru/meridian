@@ -6,7 +6,7 @@ export default async function LowStockList() {
 
   return (
     <div className="m-2.5">
-      <div className="border w-80 h-auto bg-on-brand rounded-2xl p-3 flex flex-col">
+      <div className="border w-full lg:w-80 h-auto bg-on-brand rounded-2xl p-3 flex flex-col">
         <span>Low Stock</span>
         <hr />
 

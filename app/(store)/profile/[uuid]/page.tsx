@@ -1,9 +1,9 @@
 'use client';
 import React, { useEffect } from 'react'
-import {createClient} from '../../utils/supabase/client'
+import {createClient} from '@/app/utils/supabase/client'
 import { redirect } from 'next/dist/client/components/navigation'
-import fetchUser from '../../utils/auth'
-import checkUser from '../../utils/auth';
+import fetchUser from '@/app/utils/auth'
+import checkUser from '@/app/utils/auth';
 import ProfilePage from '@/components/profile/profilePage';
 
 interface Profile {

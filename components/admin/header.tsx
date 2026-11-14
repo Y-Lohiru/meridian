@@ -8,20 +8,20 @@ export default function AdminHeader() {
   const [days, setDays] = useState(0);
 
   return (
-    <div className="flex flex-row justify-between">
+    <div className="flex flex-col gap-4 lg:flex-row lg:justify-between">
       <div className="flex flex-col">
-        <span className="text-brand text-4xl">Greetings</span>
+        <span className="text-brand text-3xl sm:text-4xl">Greetings</span>
         <span>date</span>
       </div>
-      <div className="flex justify-end flex-row gap-3.5">
-        <input className="border rounded h-9" type="text" placeholder="search order,products..."></input>
-        <select className="border rounded h-9">
+      <div className="flex flex-col sm:flex-row sm:justify-end gap-3.5">
+        <input className="border rounded h-9 px-3 w-full sm:w-auto" type="text" placeholder="search order,products..."></input>
+        <select className="border rounded h-9 px-2 w-full sm:w-auto">
             <option>Last 7 days</option>
             <option>Last 14 days</option>
             <option>Last 30 days</option>
         </select>
 
-        <Link href={"/admin/products/new"} className="bg-brand rounded border h-9 w-40 text-white p-1.5 items-center">+ Add product</Link>
+        <Link href={"/admin/products/new"} className="bg-brand rounded border h-9 w-full sm:w-40 shrink-0 text-white text-center p-1.5 items-center">+ Add product</Link>
       </div>
     </div>
   );
