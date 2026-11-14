@@ -1,17 +1,19 @@
-import Graph from "@/components/admin/graph";
 import AdminHeader from "@/components/admin/header";
 import LowStockList from "@/components/admin/lowStockList";
 import RecentOrder from "@/components/admin/recentOrder";
+import RevenueChart from "@/components/admin/revenuChart";
 import SummarySection from "@/components/admin/summary";
 import { Suspense } from "react";
 export default function AdminDashboard() {
   return (
-    <div>
+    <div className="flex flex-col gap-4 sm:gap-5">
       <AdminHeader />
       <SummarySection />
-      <div className="flex flex-col lg:flex-row justify-between">
-        <div className="min-w-0 flex-1 m-2.5 flex">
-          <Graph />
+      <div className="flex flex-col lg:flex-row gap-4">
+        <div className="min-w-0 flex-1 flex">
+          <Suspense fallback={<div>Loading chart</div>}>
+            <RevenueChart />
+          </Suspense>
         </div>
 
         <Suspense fallback={<div>Loading list</div>}>

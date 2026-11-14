@@ -3,6 +3,7 @@
 import { cookies } from "next/headers";
 import { createClient } from "@/app/utils/supabase/server";
 import { redirect } from "next/navigation";
+import { refresh } from "next/cache";
 
 interface RecentOrder {
   orderId: string;
@@ -41,9 +42,9 @@ async function requireAdmin() {
   }
 
   const { data: profile } = await supabase
-    .from("users")
+    .from("roles")
     .select("role")
-    .eq("user_id", user.id)
+    .eq("userid", user.id)
     .single();
 
   if (profile?.role !== "admin") {
@@ -192,13 +193,14 @@ async function addProduct(product: NewProduct) {
 async function removeProduct(id: string) {
   const supabase = await requireAdmin();
 
-  const { error } = await supabase.from("product").delete().eq("id", id);
+  const { data, error } = await supabase.from("product").delete().eq("id", id).select();
 
-  if (error) {
+  if (error || data.length === 0) {
     console.error(error);
     return false;
   }
 
+  refresh();
   return true;
 }
 
@@ -224,12 +226,13 @@ async function getOrderStatus() {}
 
 // Monthly revenue for the graph
 async function getMonthlyRevenue() {
+  const supabase = await getSupabase();
+
   const start = new Date();
   start.setDate(1);
   start.setHours(0, 0, 0, 0);
   start.setMonth(start.getMonth() - 5);
 
-  const supabase = await getSupabase();
   const { data, error } = await supabase
     .from("orders")
     .select("created_at, total")

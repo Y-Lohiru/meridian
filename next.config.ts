@@ -11,7 +11,11 @@ const nextConfig: NextConfig = {
         hostname: "dfknlwtazqqfpescfxkp.supabase.co",
         pathname: "/storage/v1/object/public/thumbnails/**",
       },
-    ]
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+      },
+    ],
   },
   turbopack: {
     rules: {

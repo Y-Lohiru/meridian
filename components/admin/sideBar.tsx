@@ -22,12 +22,12 @@ export default function SideBar() {
   }
 
   return (
-    <aside className="flex flex-col px-3 py-4 md:py-6 shrink-0 bg-brand w-full md:w-56 md:h-dvh md:sticky md:top-0">
+    <aside className="flex flex-col px-gutter-mobile py-3 md:px-3 md:py-6 shrink-0 bg-brand w-full md:w-56 md:h-dvh md:sticky md:top-0">
       <LogoText />
 
       <div className="text-white font-display">
         <span className="hidden md:block px-3 mt-8 mb-2 text-[10px] font-medium uppercase tracking-[0.2em] text-white/60">Store</span>
-        <ul className="flex flex-row md:flex-col gap-1 mt-4 md:mt-0 overflow-x-auto">
+        <ul className="flex flex-row md:flex-col gap-1 mt-3 md:mt-0 overflow-x-auto scrollbar-none">
           <li>
             <Link href={"/admin"} className={linkClass("/admin")}>
               <MdOutlineDashboard className="size-4" />
@@ -54,7 +54,7 @@ export default function SideBar() {
         </ul> */}
       </div>
 
-      <div className="flex flex-row items-center justify-between md:block mt-4 md:mt-auto border-t border-white/15 pt-4">
+      <div className="flex flex-row items-center justify-between md:block mt-3 md:mt-auto border-t border-white/15 pt-3 md:pt-4">
         <ProfileIcon />
         <SignOutButton />
       </div>
