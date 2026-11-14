@@ -2,6 +2,8 @@
 import React from "react";
 import Link from "next/link";
 import { usecart } from "./CartContent";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function CartDrawer() {
   const {
@@ -9,13 +11,46 @@ export default function CartDrawer() {
     isCartOpen,
     totalItemCount,
     subtotal,
+    isCartLoading,
     setIsCartOpen,
     increaseQuantity,
     decreaseQuantity,
     removeItem,
+    syncCartToDatabase,
   } = usecart();
 
   if (!isCartOpen) return null;
+  const router = useRouter();
+
+  const [isProceeding, setIsProceeding] = useState(false);
+
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
+
+  const handleProceedToCheckout = async () => {
+    if (isProceeding || cartItems.length === 0) return;
+
+    setIsProceeding(true);
+    setCheckoutError(null);
+
+    try {
+      // Synchronize local cart with Supabase
+      await syncCartToDatabase();
+
+      // Close cart drawer
+      setIsCartOpen(false);
+
+      // Navigate only after successful synchronization
+      router.push("/checkout");
+    } catch (error) {
+      console.error("Checkout preparation failed:", error);
+
+      setCheckoutError(
+        error instanceof Error ? error.message : "Unable to prepare checkout.",
+      );
+    } finally {
+      setIsProceeding(false);
+    }
+  };
 
   return (
     // FIX: Changed z-0 to z-50 so the cart sits on top of your layout
@@ -108,13 +143,23 @@ export default function CartDrawer() {
                 Shipping and Tax calculated at the checkout
               </p>
 
-              <Link
-                href="/checkout"
-                onClick={() => setIsCartOpen(false)}
-                className="block w-full bg-brand text-on-brand py-4 text-center text-xs uppercase tracking-widest hover:bg-[#3D2615] transition-colors"
+              {checkoutError && (
+                <p className="text-sm text-red-600" role="alert">
+                  {checkoutError}
+                </p>
+              )}
+              <button
+                type="button"
+                onClick={handleProceedToCheckout}
+                disabled={
+                  isProceeding || isCartLoading || cartItems.length === 0
+                }
+                className="block w-full bg-brand text-on-brand py-4 text-center text-xs uppercase tracking-widest hover:bg-[#3D2615] transition-colors disabled:opacity-50"
               >
-                Proceed to checkout-${subtotal}
-              </Link>
+                {isProceeding
+                  ? "Preparing Checkout..."
+                  : `Proceed to Checkout — $${subtotal}`}
+              </button>
             </div>
           )}
         </div>{" "}
