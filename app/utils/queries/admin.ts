@@ -165,8 +165,10 @@ async function getRecentOrders(): Promise<RecentOrder[]> {
 async function getProducts() {
   const supabase = await getSupabase();
 
-  const { data, error } = await supabase.from("product").select("*");
-
+  const { data, error } = await supabase
+    .from("product")
+    .select("*")
+    .order("created_at", { ascending: false });
   if (error) {
     console.error(error);
     return [];
@@ -193,7 +195,11 @@ async function addProduct(product: NewProduct) {
 async function removeProduct(id: string) {
   const supabase = await requireAdmin();
 
-  const { data, error } = await supabase.from("product").delete().eq("id", id).select();
+  const { data, error } = await supabase
+    .from("product")
+    .delete()
+    .eq("id", id)
+    .select();
 
   if (error || data.length === 0) {
     console.error(error);
