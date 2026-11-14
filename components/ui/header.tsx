@@ -10,10 +10,10 @@ import { usecart } from "@/components/checkout/CartContent";
 
 
 const navigation = [
-  "Fashion",
-  "Home & Living",
-  "Beauty",
-  "Technology",
+  { name: "Fashion", href: "/shop?category=Boots,Loafers,Formal,Sneakers,Heels,Sandals" },
+  { name: "Home & Living", href: "/shop?category=Lighting,Furniture,Ceramics" },
+  { name: "Beauty", href: "/shop" },
+  { name: "Technology", href: "/shop" },
 ];
 
 export default function Header() {
@@ -73,11 +73,11 @@ export default function Header() {
         <nav className="hidden items-center gap-7 lg:flex">
           {navigation.map((item) => (
             <Link
-              key={item}
-              href="#"
+              key={item.name}
+              href={item.href}
               className="text-xs text-white/80 transition-colors hover:text-white"
             >
-              {item}
+              {item.name}
             </Link>
           ))}
         </nav>
@@ -129,12 +129,12 @@ export default function Header() {
           <div className="flex flex-col gap-5">
             {navigation.map((item) => (
               <Link
-                key={item}
-                href="#"
+                key={item.name}
+                href={item.href}
                 onClick={() => setMenuOpen(false)}
                 className="border-b border-white/20 pb-3 text-sm text-white/80 transition-colors hover:text-white"
               >
-                {item}
+                {item.name}
               </Link>
             ))}
 

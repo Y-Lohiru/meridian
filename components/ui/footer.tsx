@@ -2,10 +2,10 @@
 import Link from "next/link";
 
 const shopLinks = [
-  "Fashion",
-  "Home & Living",
-  "Beauty",
-  "Technology",
+  { name: "Fashion", href: "/shop?category=Boots,Loafers,Formal,Sneakers,Heels,Sandals" },
+  { name: "Home & Living", href: "/shop?category=Lighting,Furniture,Ceramics" },
+  { name: "Beauty", href: "/shop" },
+  { name: "Technology", href: "/shop" },
 ];
 
 export default function Footer() {
@@ -21,12 +21,12 @@ export default function Footer() {
 
           <ul className="space-y-4 text-sm text-on-brand-soft">
             {shopLinks.map((item) => (
-              <li key={item}>
+              <li key={item.name}>
                 <Link
-                  href="#"
+                  href={item.href}
                   className="transition-colors hover:text-white"
                 >
-                  {item}
+                  {item.name}
                 </Link>
               </li>
             ))}
@@ -46,21 +46,14 @@ export default function Footer() {
 
           <div className="flex gap-5">
             <Link
-              href="/Policy/privacy"
+              href="/Policies/privacy"
               className="transition-colors hover:text-white"
             >
               Privacy
             </Link>
 
             <Link
-              href="/help"
-              className="transition-colors hover:text-white"
-            >
-              Help
-            </Link>
-
-            <Link
-              href="/Policy/terms"
+              href="/Policies/terms"
               className="transition-colors hover:text-white"
             >
               Terms
