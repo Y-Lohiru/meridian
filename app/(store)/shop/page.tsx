@@ -1,7 +1,7 @@
 // app/shop/page.tsx
 import React, { Suspense } from "react";
-import FilterSidebar, { ColorOption } from "@/components/Product page/filterSidebar";
-import ProductGrid from "@/components/Product page/productGrid";
+import FilterSidebar, { ColorOption } from "@/components/ProductPage/filterSidebar";
+import ProductGrid from "@/components/ProductPage/productGrid";
 import { getProducts } from "@/lib/data/products";
 
 interface PageProps {
