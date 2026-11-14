@@ -4,6 +4,8 @@ import React from 'react'
 import {createClient} from '../utils/supabase/client'
 import { redirect } from 'next/dist/client/components/navigation'
 import { useState } from 'react'
+import SignupForm from '../../components/auth/signUpForm'
+import SignInForm from '@/components/auth/signInForm';
 const page = () => {
  const [email, setEmail] = useState('');
  const [password, setPassword] = useState('');
@@ -25,11 +27,12 @@ const page = () => {
 
   return (
     <div>
-      <form onSubmit={handleSubmit}>
+      <SignInForm />
+      {/* <form onSubmit={handleSubmit}>
         <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
         <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
         <button type="submit">Login</button>
-      </form>
+      </form> */}
     </div>
   )
 }

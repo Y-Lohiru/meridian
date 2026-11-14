@@ -3,6 +3,7 @@ import React, { useEffect } from 'react'
 import {createClient} from '../utils/supabase/client'
 import { redirect } from 'next/dist/client/components/navigation'
 import { useState } from 'react'
+import SignupForm from '../../components/auth/signUpForm'
 
 const page =() => {
     const supabase = createClient()
@@ -46,15 +47,7 @@ const [password, setPassword] = useState('');
     };
   return (
     <div>
-      <div>
-      <form onSubmit={handleSubmit}>
-<input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)}></input>
-<input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)}></input>
-
- 
-   <button type="submit" >Sign Up</button>
-      </form>
-    </div>
+      <SignupForm />
     </div>
   )
 }
