@@ -80,26 +80,6 @@ const changeProfile = async (e: React.FormEvent<HTMLFormElement>) => {
 
     <div>   
         <ProfilePage/>
-        <button onClick={signout}>signout</button>
-
-        {/* <h1>Profile Page</h1>
-        <a href="/track/sjdhjkh">Edit Profile</a>
-        
-        {user ? (
-        <form onSubmit={changeProfile}>
-                <div>First Name: <input value={user.fname  || ''} onChange={(e) => setUser({...user, fname: e.target.value})} /></div>
-                <div>Last Name:<input value={user.lname  || ''} onChange={(e) => setUser({...user, lname: e.target.value})} /></div>
-                <div>Email: <input value={user.email  || ''} onChange={(e) => setUser({...user, email: e.target.value})} /></div>
-                <div>Address: <input value={user.address || ''} onChange={(e) => setUser({...user, address: e.target.value})} /></div>
-                <div>Contact Number: <input value={user.contactno || ''} onChange={(e) => setUser({...user, contactno: e.target.value})} /></div>
-            
-            <div className="flex">
-                <button type="submit" className='disabled:opacity-30 bg-blue-500 text-white py-2 px-4 rounded'>Save Changes</button>
-            </div>
-            </form>
-        ) : (
-            <p>Loading...</p>
-        )} */}
     </div>
   )
 }
