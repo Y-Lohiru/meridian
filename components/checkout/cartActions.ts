@@ -6,14 +6,14 @@ export interface CartSyncItem {
   quantity: number;
 }
 
-// Synchronize the complete local cart with Supabase
+
 export async function syncCartToDatabase(
   items: CartSyncItem[]
 ): Promise<void> {
 
   const supabase = createClient();
 
-  // 1. Get authenticated user
+
   const {
     data: { user },
     error: authError,
@@ -23,7 +23,7 @@ export async function syncCartToDatabase(
     throw new Error("Please log in before proceeding to checkout.");
   }
 
-  // 2. Validate cart items
+
   for (const item of items) {
     if (
       !item.productId ||
@@ -34,7 +34,7 @@ export async function syncCartToDatabase(
     }
   }
 
-  // 3. Get existing database cart
+  // Get existing database cart
   const { data: existingRows, error: fetchError } = await supabase
     .from("cart")
     .select("id, product_id, variant")
@@ -44,7 +44,7 @@ export async function syncCartToDatabase(
     throw new Error(fetchError.message);
   }
 
-  // 4. Prepare local cart for Supabase
+ 
   const rows = items.map((item) => ({
     user_id: user.id,
     product_id: item.productId,
@@ -53,7 +53,7 @@ export async function syncCartToDatabase(
     updated_at: new Date().toISOString(),
   }));
 
-  // 5. Insert new records or update existing records
+  
   if (rows.length > 0) {
 
     const { error: upsertError } = await supabase
@@ -67,7 +67,7 @@ export async function syncCartToDatabase(
     }
   }
 
-  // 6. Identify items removed from the local cart
+  //  items removed local cart
   const localKeys = new Set(
     items.map(
       (item) => `${item.productId}::${item.variant || ""}`
@@ -83,7 +83,7 @@ export async function syncCartToDatabase(
     )
     .map((row) => row.id);
 
-  // 7. Delete removed items from Supabase
+  // delete from Supabase
   if (staleIds.length > 0) {
 
     const { error: deleteError } = await supabase
