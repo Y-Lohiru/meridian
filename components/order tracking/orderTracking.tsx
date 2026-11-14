@@ -1,77 +1,198 @@
 
 "use client";
-
-import { useState } from "react";
+import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   ArrowLeft,
-  ArrowRight,
   Check,
   Package,
   Truck,
   MapPin,
   CalendarDays,
   Headphones,
-  ShoppingBag,
   CreditCard,
   ShieldCheck,
   Clock3,
 } from "lucide-react";
+import checkUser from "@/app/utils/auth";
+import { redirect } from "next/navigation";
+import { createClient } from "../../app/utils/supabase/client";
 
-const order = {
-  number: "M-10479",
-  placedOn: "12 November 2026",
-  status: "In transit",
-  estimatedDelivery: "18 November 2026",
-  carrier: "DHL Express",
-  trackingNumber: "DHL-82910472",
-  deliveryMethod: "Express delivery",
-  paymentMethod: "Visa ending in 4242",
-  recipient: "Alex Morgan",
-  address: [
-    "24 Kensington Gardens",
-    "London W8 4PX",
-    "United Kingdom",
-  ],
-  subtotal: 1055,
-  shipping: 0,
-  total: 1055,
+type DatabaseOrder = {
+  order_id: string;
+  user_id: string;
+  status: string | null;
+  total: number | null;
+  created_at: string;
+  apartment: string | null;
+  city: string | null;
+  country: string | null;
+  delivery_cost: number | null;
+  payment_method: string | null;
+  delivery_method: string | null;
+};
+type OrderedProduct = {
+  id: number;
+  product_id: string;
+  quantity: number | null;
+  variant: string | null;
+  unit_price: number | null;
+  product: {
+    productName: string | null;
+    image_url: string | null;
+    category: string | null;
+    price: number | null;
+  } | null;
 };
 
-const products = [
-  {
-    name: "Double-faced cashmere overcoat",
-    category: "FASHION / OUTERWEAR",
-    variant: "Camel / Medium",
-    quantity: 1,
-    price: 890,
-    image: "/images/products/cashmere-coat.jpg",
-  },
-  {
-    name: "Hand-thrown stoneware vase",
-    category: "HOME & LIVING / OBJECTS",
-    variant: "Natural / One size",
-    quantity: 1,
-    price: 165,
-    image: "/images/products/stoneware-vase.jpg",
-  },
-];
+const formatDate = (value: string) =>
+  new Date(value).toLocaleDateString("en-GB", {
+    day: "numeric", month: "long", year: "numeric",
+  });
 
-const stages = [
-  { label: "Confirmed", date: "12 Nov" },
-  { label: "Preparing", date: "13 Nov" },
-  { label: "Shipped", date: "14 Nov" },
-  { label: "Delivered", date: "Expected 18 Nov" },
-];
+function addDaysToDate(value: string, days: number) {
+  const date = new Date(value);
+  date.setUTCDate(date.getUTCDate() + days);
+  return formatDate(date.toISOString());
+}
 
-function money(value: number) {
+function money(value: number | null) {
+  if (value === null) return "null";
   return `$${value.toLocaleString("en-US", {
     minimumFractionDigits: 2,
   })}`;
 }
 
 export default function TrackOrderPage() {
-  const [detailsOpen, setDetailsOpen] = useState(false);
+  const params = useParams<{ uuid: string }>();
+  const orderid = params.uuid;
+  const [orderData, setOrderData] = useState<DatabaseOrder | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState<OrderedProduct[]>([]);
+  const [orderSubtotal, setOrderSubtotal] = useState<number | null>(null);
+      const fetchUser = async () => {
+          checkUser().then((user) => {
+              if (user.data.user) {
+                  console.log(user.data.user)   
+              } else {
+                  console.log("User not logged in")
+                  return redirect('/login')
+              }
+          })
+      }    
+useEffect(() => {
+  fetchUser();
+  fetchProducts(orderid || "");
+  fetchOrderedProducts(orderid || "");
+}, [orderid]);
+      
+const fetchProducts =   async (id: string) =>{
+    const supabase = createClient();
+    const {data:orderdata, error}  = await supabase.from('orders').select('order_id, user_id, status, total, created_at, apartment, city, country, delivery_cost, payment_method, delivery_method').eq('order_id', id);
+    if (error) {
+        console.error('Error fetching Orders:', error);
+    }
+    else {
+
+        setOrderData(orderdata?.[0] ?? null);
+    }
+    setLoading(false);
+  }
+const fetchOrderedProducts = async (id: string) => {
+  const supabase = createClient();
+
+  const { data, error } = await supabase
+    .from("order_product")
+    .select(`
+      id,
+      product_id,
+      quantity,
+      variant,
+      unit_price,
+      product (
+        productName,
+        image_url,
+        category,
+        price
+      )
+    `)
+    .eq("order_id", id);
+
+  if (error) {
+    console.error("Error fetching ordered products:", error);
+    return;
+  }
+
+  const orderedProducts: OrderedProduct[] = (data ?? []).map((item) => ({
+    id: item.id,
+    product_id: item.product_id,
+    quantity: item.quantity,
+    variant: item.variant,
+    unit_price: item.unit_price,
+    product: Array.isArray(item.product)
+      ? (item.product[0] ?? null)
+      : (item.product ?? null),
+  }));
+
+  // Hide order items whose related product record is missing.
+  const validProducts = orderedProducts.filter(
+    (item) => item.product !== null && item.product.productName !== null
+  );
+
+  // Calculate the subtotal from all order items, including those with missing
+  // product details. Prefer the price recorded at the time of purchase.
+  const pricedItems = orderedProducts.filter(
+    (item) => item.quantity !== null &&
+      (item.unit_price ?? item.product?.price) != null
+  );
+  setOrderSubtotal(
+    orderedProducts.length > 0 && pricedItems.length === orderedProducts.length
+      ? pricedItems.reduce(
+          (sum, item) => sum + (item.unit_price ?? item.product?.price ?? 0) * (item.quantity ?? 0),
+          0
+        )
+      : null
+  );
+
+  setProducts(validProducts);
+};
+  if (loading) return <main className="min-h-screen bg-surface-cream p-12">Loading order...</main>;
+  if (!orderData) return <main className="min-h-screen bg-surface-cream p-12">Order not found.</main>;
+
+  // These are the only fields selected by the existing fetch function.
+  const order = {
+    number: orderData.order_id,
+    placedOn: formatDate(orderData.created_at),
+    status: orderData.status ?? "null",
+    estimatedDelivery: orderData.status?.trim().toLowerCase() === "awaiting payment"
+      ? "-"
+      : addDaysToDate(orderData.created_at, 6),
+    carrier: "null",
+    trackingNumber: "null",
+    deliveryMethod: orderData.delivery_method ?? "null",
+    paymentMethod: orderData.payment_method ?? "null",
+    recipient: "",
+    address: [orderData.apartment, orderData.city, orderData.country]
+      .filter((line): line is string => Boolean(line?.trim()))
+      .join(", ") || "null",
+    subtotal: orderSubtotal,
+    shipping: orderData.delivery_cost,
+    total: orderData.total,
+  };
+ 
+  const isAwaitingPayment = orderData.status?.trim().toLowerCase() === "awaiting payment";
+  const stages = [
+    { label: "Confirmed", date: isAwaitingPayment ? "-" : formatDate(orderData.created_at) },
+    { label: "Preparing", date: isAwaitingPayment ? "-" : addDaysToDate(orderData.created_at, 1) },
+    { label: "Shipped", date: isAwaitingPayment ? "-" : addDaysToDate(orderData.created_at, 2) },
+    { label: "Delivered", date: isAwaitingPayment ? "-" : order.estimatedDelivery },
+  ];
+  const status = order.status.toLowerCase();
+  const currentStep = status.includes("deliver") ? 4
+    : status.includes("ship") || status.includes("transit") ? 3
+    : status.includes("prepar") || status.includes("process") ? 2
+    : status.includes("confirm") || status.includes("pend") ? 1 : 0;
 
   return (
     <main className="min-h-screen bg-surface-cream text-ink">
@@ -140,7 +261,7 @@ export default function TrackOrderPage() {
                   className="text-brand-umber"
                 />
                 <span className="eyebrow text-brand-umber">
-                  ON ITS WAY TO YOU
+                  ORDER STATUS
                 </span>
               </div>
 
@@ -153,9 +274,7 @@ export default function TrackOrderPage() {
               </h3>
 
               <p className="mt-4 max-w-md text-sm leading-7 text-ink-muted">
-                Your pieces have left our care and are making
-                their way to you. We&apos;ll keep you updated
-                as your delivery progresses.
+                Your current order status is {order.status}. Delivery estimate: {order.estimatedDelivery}.
               </p>
             </div>
 
@@ -177,22 +296,22 @@ export default function TrackOrderPage() {
                 DELIVERY PROGRESS
               </p>
               <h2 className="font-display text-3xl md:text-4xl">
-                Almost there.
+                Order progress.
               </h2>
             </div>
             <span className="hidden text-xs text-ink-muted sm:block">
-              Step 3 of 4
+              Step {currentStep} of 4
             </span>
           </div>
 
           <div className="relative">
             <div className="absolute left-[12.5%] right-[12.5%] top-[17px] h-px bg-line" />
-            <div className="absolute left-[12.5%] top-[17px] h-px w-[50%] bg-brand" />
+            <div className="absolute left-[12.5%] top-[17px] h-px bg-brand" style={{ width: `${Math.max(0, currentStep - 1) * 25}%` }} />
 
             <div className="relative grid grid-cols-4 gap-2">
               {stages.map((stage, index) => {
-                const completed = index < 3;
-                const current = index === 2;
+                const completed = index < currentStep;
+                const current = index === currentStep - 1;
 
                 return (
                   <div
@@ -245,43 +364,60 @@ export default function TrackOrderPage() {
             </h2>
 
             <div className="mt-9 divide-y divide-line border-t border-line">
-              {products.map((product) => (
-                <div
-                  key={product.name}
-                  className="flex gap-5 py-7 sm:gap-7"
-                >
-                  <div className="h-32 w-24 shrink-0 overflow-hidden bg-surface-sand sm:h-40 sm:w-32">
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
+              {products.length === 0 && (
+  <p className="py-7 text-sm text-ink-muted">
+    No products found for this order.
+  </p>
+)}
 
-                  <div className="flex min-w-0 flex-1 flex-col justify-between py-1">
-                    <div>
-                      <p className="text-[10px] uppercase tracking-[0.14em] text-brand-umber">
-                        {product.category}
-                      </p>
-                      <h3 className="mt-3 font-display text-lg leading-snug sm:text-xl">
-                        {product.name}
-                      </h3>
-                      <p className="mt-2 text-xs text-ink-muted">
-                        {product.variant}
-                      </p>
-                    </div>
+{products.map((item) => (
+  <div
+    key={item.id}
+    className="flex gap-5 py-7 sm:gap-7"
+  >
+    <div className="h-32 w-24 shrink-0 overflow-hidden bg-surface-sand sm:h-40 sm:w-32">
+      {item.product?.image_url ? (
+        <img
+          src={item.product.image_url}
+          alt={item.product.productName ?? "Product"}
+          className="h-full w-full object-cover"
+        />
+      ) : (
+        <div className="flex h-full items-center justify-center text-xs text-ink-muted">
+          No image
+        </div>
+      )}
+    </div>
 
-                    <div className="mt-4 flex items-center justify-between">
-                      <span className="text-xs text-ink-muted">
-                        Qty {product.quantity}
-                      </span>
-                      <span className="text-sm font-medium">
-                        {money(product.price)}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              ))}
+    <div className="flex min-w-0 flex-1 flex-col justify-between py-1">
+      <div>
+        <p className="text-[10px] uppercase tracking-[0.14em] text-brand-umber">
+          {item.product?.category ?? "null"}
+        </p>
+
+        <h3 className="mt-3 font-display text-lg leading-snug sm:text-xl">
+          {item.product?.productName ?? "null"}
+        </h3>
+
+        <p className="mt-2 text-xs text-ink-muted">
+          {money(item.unit_price ?? item.product?.price ?? null)}
+        </p>
+      </div>
+
+      <div className="mt-4 flex items-center justify-between">
+        <span className="text-xs text-ink-muted">
+          Qty {item.quantity ?? "null"}
+        </span>
+
+        <span className="text-sm font-medium">
+          {(item.unit_price ?? item.product?.price) != null && item.quantity != null
+            ? money((item.unit_price ?? item.product?.price ?? 0) * item.quantity)
+            : "null"}
+        </span>
+      </div>
+    </div>
+  </div>
+))}
             </div>
           </section>
 
@@ -307,14 +443,7 @@ export default function TrackOrderPage() {
                       Delivery address
                     </p>
                     <p className="text-sm leading-7 text-ink-muted">
-                      {order.recipient}
-                      <br />
-                      {order.address.map((line) => (
-                        <span key={line}>
-                          {line}
-                          <br />
-                        </span>
-                      ))}
+                      {order.address}
                     </p>
                   </div>
                 </div>
@@ -330,8 +459,6 @@ export default function TrackOrderPage() {
                       Shipping service
                     </p>
                     <p className="text-sm leading-6 text-ink-muted">
-                      {order.carrier}
-                      <br />
                       {order.deliveryMethod}
                     </p>
                   </div>
@@ -363,11 +490,11 @@ export default function TrackOrderPage() {
               <div className="space-y-4 text-sm">
                 <div className="flex justify-between">
                   <span className="text-ink-muted">Subtotal</span>
-                  <span>{money(order.subtotal)}</span>
+                  <span>{order.subtotal === null ? "null" : money(order.subtotal)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-ink-muted">Delivery</span>
-                  <span>Complimentary</span>
+                  <span>{money(order.shipping)}</span>
                 </div>
                 <div className="flex justify-between border-t border-line pt-5">
                   <span className="font-medium">Total paid</span>
@@ -385,57 +512,22 @@ export default function TrackOrderPage() {
           </aside>
         </div>
 
-        {/* Action cards */}
-        <section className="mt-16 grid gap-5 border-t border-line pt-12 md:grid-cols-2 md:mt-24">
-          <div className="flex flex-col justify-between border border-line p-7 md:p-9">
-            <div>
-              <Headphones
-                size={25}
-                strokeWidth={1.2}
-                className="mb-7 text-brand-umber"
-              />
-              <h3 className="font-display text-2xl">
-                We're here to help.
-              </h3>
-              <p className="mt-3 max-w-sm text-sm leading-7 text-ink-muted">
-                Have a question about your order or delivery?
-                Our concierge team is here to assist you.
-              </p>
-            </div>
-
-            <Link
-              href="/contact"
-              className="mt-9 inline-flex items-center justify-between border-b border-ink pb-3 text-xs font-medium uppercase tracking-[0.13em] transition hover:text-brand-umber"
-            >
-              Contact support
-              <ArrowRight size={17} strokeWidth={1.5} />
-            </Link>
-          </div>
-
-          <div className="flex flex-col justify-between bg-surface-sand p-7 md:p-9">
-            <div>
-              <ShoppingBag
-                size={25}
-                strokeWidth={1.2}
-                className="mb-7 text-brand-umber"
-              />
-              <h3 className="font-display text-2xl">
-                Your order, at a glance.
-              </h3>
-              <p className="mt-3 max-w-sm text-sm leading-7 text-ink-muted">
-                Review your order reference, payment information,
-                shipping service and purchased pieces.
-              </p>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => setDetailsOpen(true)}
-              className="mt-9 inline-flex items-center justify-between border-b border-ink pb-3 text-xs font-medium uppercase tracking-[0.13em] transition hover:text-brand-umber"
-            >
-              View order details
-              <ArrowRight size={17} strokeWidth={1.5} />
-            </button>
+        {/* Support */}
+        <section className="mt-16 border-t border-line pt-12 md:mt-24">
+          <div className="border border-line p-7 md:p-9">
+            <Headphones
+              size={25}
+              strokeWidth={1.2}
+              className="mb-7 text-brand-umber"
+            />
+            <h3 className="font-display text-2xl">We're here to help.</h3>
+            <p className="mt-3 max-w-sm text-sm leading-7 text-ink-muted">
+              Have a question about your order or delivery?
+              Our concierge team is here to assist you.
+            </p>
+            <p className="mt-9 text-sm text-ink-muted">
+              Email: <a href="mailto:support@yourdomain.com" className="underline hover:text-brand-umber">support@yourdomain.com</a>
+            </p>
           </div>
         </section>
 
@@ -456,76 +548,6 @@ export default function TrackOrderPage() {
         </div>
       </div>
 
-      {/* Order details modal */}
-      {detailsOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4"
-          onClick={() => setDetailsOpen(false)}
-        >
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="order-details-title"
-            className="w-full max-w-lg bg-surface-cream p-7 shadow-xl md:p-10"
-            onClick={(event) => event.stopPropagation()}
-          >
-            <div className="flex items-start justify-between gap-5">
-              <div>
-                <p className="eyebrow mb-3 text-brand-umber">
-                  ORDER DETAILS
-                </p>
-                <h2
-                  id="order-details-title"
-                  className="font-display text-3xl"
-                >
-                  {order.number}
-                </h2>
-              </div>
-              <button
-                onClick={() => setDetailsOpen(false)}
-                className="text-sm text-ink-muted hover:text-ink"
-                aria-label="Close order details"
-              >
-                ✕
-              </button>
-            </div>
-
-            <div className="mt-8 space-y-5 border-y border-line py-6 text-sm">
-              {[
-                ["Order placed", order.placedOn],
-                ["Current status", order.status],
-                ["Carrier", order.carrier],
-                ["Tracking number", order.trackingNumber],
-                ["Delivery method", order.deliveryMethod],
-                ["Payment", order.paymentMethod],
-                ["Items", String(products.length)],
-              ].map(([label, value]) => (
-                <div
-                  key={label}
-                  className="flex justify-between gap-6"
-                >
-                  <span className="text-ink-muted">{label}</span>
-                  <span className="text-right">{value}</span>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-6 flex items-center justify-between">
-              <span className="text-sm font-medium">Total paid</span>
-              <span className="font-display text-2xl">
-                {money(order.total)}
-              </span>
-            </div>
-
-            <button
-              onClick={() => setDetailsOpen(false)}
-              className="mt-9 w-full bg-brand px-6 py-4 text-xs font-medium uppercase tracking-[0.16em] text-on-brand transition hover:bg-brand-deep"
-            >
-              Close details
-            </button>
-          </div>
-        </div>
-      )}
     </main>
   );
 }

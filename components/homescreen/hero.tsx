@@ -30,7 +30,7 @@ export default function Hero() {
 
           <div className="mt-9 flex flex-wrap gap-3">
             <Link
-              href="#edit"
+              href="/shop"
               className="flex min-h-14 items-center justify-center bg-brand px-7 text-2xs font-semibold tracking-button text-on-brand transition-colors hover:bg-brand-walnut"
             >
               SHOP NEW ARRIVALS
