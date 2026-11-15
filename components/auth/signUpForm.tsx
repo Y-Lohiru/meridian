@@ -89,13 +89,11 @@ export default function SignUpForm() {
 
   return (
     <div>
-      <div className="flex h-screen">
+      <div className="flex min-h-screen flex-col-reverse lg:flex-row">
         <div
-          className={`w-1/2 lg:px-16 p-4  ${`bg-brand text-on-brand`} flex flex-col justify-between items-center`}
+          className={`lg:w-1/2 w-full lg:px-16 p-4  ${`bg-brand text-on-brand`} flex flex-col justify-between items-center`}
         >
-          <h2 className="text-2xl text-left font-bold mb-4 inline-flex items-center gap-2">
-            <img src="/logo.png" className="w-12"></img>MERIDIAN
-          </h2>
+<h2></h2>
           <div>
             <p className="font-sans">MERIDIAN MEMBERS</p>
             <br />
@@ -126,7 +124,7 @@ export default function SignUpForm() {
           <p className="text-left font-sans">&copy; 2026 Meridian</p>
         </div>
 
-        <div className="max-w-2xl min-w-lg mx-auto p-4 flex flex-col justify-center font-sans ">
+        <div className="max-w-2xl lg:min-w-lg mx-auto p-4 flex flex-col justify-center font-sans ">
           <h3 className="text-2xl font-bold mb-4 font-display">Sign Up</h3>
           <p className="font-sans mb-4">
             Already have an account?{" "}
@@ -138,7 +136,7 @@ export default function SignUpForm() {
             </a>
           </p>
           <form onSubmit={handleSubmit} className="flex flex-col gap-">
-            <div className="flex gap-4 w-full my-4">
+            <div className="flex flex-col md:flex-row gap-4 w-full my-4">
               <div className="flex flex-col">
                 <label className="font-sans mb-2">First Name</label>
                 <input

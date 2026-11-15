@@ -47,7 +47,7 @@ export default function HomePage({ searchParams }: PageProps) {
           small family workshops, and chosen for how they age.
         </p>
 
-        <div className="flex gap-8 items-start">
+        <div className="flex md:flex-row flex-col gap-8 items-start">
           <FilterSidebar
             categories={categoriesList}
             colors={colorsList}

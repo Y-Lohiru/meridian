@@ -24,13 +24,11 @@ export default function SignInForm() {
   };
   return (
     <div>
-      <div className="flex h-screen">
+      <div className="flex min-h-screen flex-col-reverse lg:flex-row">
         <div
-          className={`w-1/2 p-4 ${`bg-brand text-on-brand`} flex flex-col justify-between items-center`}
+          className={`lg:w-1/2 w-full p-4 ${`bg-brand text-on-brand`} flex flex-col justify-between items-center`}
         >
-          <h2 className="text-2xl text-left font-bold mb-4 inline-flex items-center gap-2">
-            <img src="/logo.png" className="w-12"></img>MERIDIAN
-          </h2>
+     <h2></h2>
           <div>
             <p className="font-sans">MERIDIAN MEMBERS</p>
             <br />
@@ -61,7 +59,7 @@ export default function SignInForm() {
           <p className="text-left font-sans">&copy; 2026 Meridian</p>
         </div>
 
-        <div className="max-w-2xl min-w-lg mx-auto p-4 flex flex-col justify-center font-sans ">
+        <div className="max-w-2xl sm:min-w-lg mx-auto p-4 flex flex-col justify-center font-sans ">
           <h3 className="text-2xl font-bold mb-4 font-display">Sign In</h3>
           <p className="font-sans mb-4">
             New to Meridian?{" "}
@@ -72,7 +70,7 @@ export default function SignInForm() {
               Sign up
             </a>
           </p>
-          <form className="flex flex-col gap-" onSubmit={handleSubmit}>
+          <form className="flex flex-col " onSubmit={handleSubmit}>
             <div className="flex flex-col">
               <label className="font-sans mb-2">Email</label>
               <input
@@ -110,7 +108,7 @@ export default function SignInForm() {
 
             <button
               type="submit"
-              className="cursor-pointer text-sm bg-brand text-on-brand py-4 px-4 mt-4 hover:bg-brand-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand"
+              className="cursor-pointer text-sm bg-brand text-on-brand py-4 px-4 mt-4 hover:bg-brand-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand w-full"
             >
               SIGN IN{" "}
             </button>
