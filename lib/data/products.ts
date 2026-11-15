@@ -1,13 +1,13 @@
 import { Product, ProductFilters } from "@/components/product detail/types/product";
 import { createClient } from "@/app/utils/supabase/server";
 import { cookies } from "next/headers";
+import { ProductReview } from "@/components/product detail/types/product";
 
 export async function getProducts(filters: ProductFilters): Promise<Product[]> {
   try {
     const cookieStore = await cookies();
     const supabase = createClient(cookieStore);
 
-    // Target the singular 'product' table from your schema
     let query = supabase.from("product").select("*");
 
     // Category filter
@@ -111,7 +111,7 @@ export async function getProductById(id: string): Promise<Product | null> {
 
     const { data, error } = await supabase
       .from("product")
-      .select('id, created_at, "productName", price, category, material, color, quantity, image_url, images, variants')
+      .select('id, created_at, "productName", price, category, material, color, quantity, image_url, images, variants, details')
       .eq("id", id)
       .single();
 
