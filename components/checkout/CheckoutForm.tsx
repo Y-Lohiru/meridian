@@ -83,7 +83,6 @@ export default function CheckoutForm({
           throw new Error("Please log in to load your saved details.");
         }
 
-        // 2. Fetch customer information from public.users
         const { data: profile, error: profileError } = await supabase
           .from("users")
           .select("email, fname, lname, address, contactno")
@@ -96,7 +95,6 @@ export default function CheckoutForm({
 
         if (cancelled) return;
 
-        // 3. Populate checkout form
         setFormData((prev) => ({
           ...prev,
 
@@ -151,9 +149,6 @@ export default function CheckoutForm({
     setIsSubmitting(true);
 
     try {
-      // Send checkout form information
-      // to the frontend order function
-
       await syncCartToDatabase();
 
       const result = await placeOrder({
@@ -184,12 +179,8 @@ export default function CheckoutForm({
 
       console.log("Order successfully created:", result.orderId);
 
-      // Refresh React cart state
-      // The database trigger has cleared the cart.
-
       clearCartAfterOrder();
 
-      // Navigate to success page
       router.push(
         `/order-success?orderId=${encodeURIComponent(result.orderId)}`,
       );
@@ -227,7 +218,7 @@ export default function CheckoutForm({
           {submitError}
         </div>
       )}
-      {/* 01 Contact */}
+
       <section className="space-y-4">
         <h2 className="text-lg font-display border-b border-line pb-3">
           <span className="text-xs font-sans tracking-eyebrow text-ink-subtle block mb-1">
@@ -264,7 +255,6 @@ export default function CheckoutForm({
         </div>*/}
       </section>
 
-      {/* 02 Delivery Address */}
       <section className="space-y-4">
         <h2 className="text-lg font-display border-b border-line pb-3">
           <span className="text-xs font-sans tracking-widest text-ink-subtle block mb-1">
@@ -386,7 +376,6 @@ export default function CheckoutForm({
         </div>
       </section>
 
-      {/* 03 Delivery Method */}
       <section className="space-y-4">
         <h2 className="text-lg font-display border-b border-line pb-3">
           <span className="text-xs font-sans tracking-widest text-ink-subtle block mb-1">
@@ -436,7 +425,6 @@ export default function CheckoutForm({
           ))}
         </div>
 
-        {/* Gift-wrap option */}
         <div className="flex items-center space-x-3 pt-2">
           <input
             type="checkbox"
@@ -461,7 +449,6 @@ export default function CheckoutForm({
         </h2>
 
         <div className="space-y-3">
-          {/* Cash on Delivery */}
           <label
             className={`block p-4 border cursor-pointer transition-all ${
               formData.paymentMethod === "cod"
@@ -487,7 +474,6 @@ export default function CheckoutForm({
             </p>
           </label>
 
-          {/* Card on Delivery */}
           <label
             className={`block p-4 border cursor-pointer transition-all ${
               formData.paymentMethod === "card_on_delivery"
@@ -515,7 +501,6 @@ export default function CheckoutForm({
         </div>
       </section>
 
-      {/* Submit CTA */}
       <div className="pt-4">
         <Button
           type="submit"

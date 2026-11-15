@@ -1,7 +1,7 @@
 
 import { createClient } from "@/app/utils/supabase/client";
 
-// Checkout information from CheckoutForm.tsx
+
 export interface CheckoutDetails {
   email: string;
   firstName: string;
@@ -43,7 +43,7 @@ interface OrderLine {
   unit_price: number;
 }
 
-// Result returned after placing an order
+
 export interface PlaceOrderResult {
   orderId: string;
   total: number;
@@ -57,9 +57,6 @@ export async function placeOrder(
 
   const supabase = createClient();
 
-  // ----------------------------------
-  // 1. Get authenticated customer
-  // ----------------------------------
 
   const {
     data: { user },
@@ -74,9 +71,6 @@ export async function placeOrder(
     throw new Error("Please log in before placing an order.");
   }
 
-  // ----------------------------------
-  // 2. Validate checkout information
-  // ----------------------------------
 
   const requiredFields = [
     details.email,
@@ -93,14 +87,11 @@ export async function placeOrder(
     throw new Error("Please complete all required checkout fields.");
   }
 
-  
+
 if (!["cod", "card_on_delivery"].includes(details.paymentMethod)) {
   throw new Error("Invalid payment method.");
 }
 
-  // ----------------------------------
-  // 3. Retrieve customer's cart
-  // ----------------------------------
 
   const { data: cartData, error: cartError } = await supabase
     .from("cart")
@@ -117,9 +108,6 @@ if (!["cod", "card_on_delivery"].includes(details.paymentMethod)) {
     throw new Error("Your cart is empty.");
   }
 
-  // ----------------------------------
-  // 4. Retrieve actual product details
-  // ----------------------------------
 
   const productIds = [
     ...new Set(cartRows.map((item) => item.product_id)),
@@ -140,9 +128,6 @@ if (!["cod", "card_on_delivery"].includes(details.paymentMethod)) {
     products.map((product) => [product.id, product])
   );
 
-  // ----------------------------------
-  // 5. Calculate order subtotal
-  // ----------------------------------
 
   let subtotal = 0;
 
@@ -162,8 +147,7 @@ if (!["cod", "card_on_delivery"].includes(details.paymentMethod)) {
       throw new Error("Invalid product quantity.");
     }
 
-    // Add quantities of different variants
-    // because product.quantity is shared by the product.
+
 
     requestedQuantities.set(
       item.product_id,
@@ -171,7 +155,7 @@ if (!["cod", "card_on_delivery"].includes(details.paymentMethod)) {
         item.quantity
     );
 
-    // Find selected variant
+
     const variants = Array.isArray(product.variants)
       ? product.variants
       : [];
@@ -186,7 +170,7 @@ if (!["cod", "card_on_delivery"].includes(details.paymentMethod)) {
       );
     }
 
-    // Use variant price or base product price
+
     const unitPrice = Number(
       selectedVariant?.price ?? product.price
     );
@@ -205,9 +189,6 @@ if (!["cod", "card_on_delivery"].includes(details.paymentMethod)) {
     });
   }
 
-  // ----------------------------------
-  // 6. Check available stock
-  // ----------------------------------
 
   for (const [productId, requestedQty] of requestedQuantities) {
 
@@ -225,9 +206,6 @@ if (!["cod", "card_on_delivery"].includes(details.paymentMethod)) {
     }
   }
 
-  // ----------------------------------
-  // 7. Calculate delivery cost
-  // ----------------------------------
 
   const deliveryPrices: Record<string, number> = {
     standard: 0,
@@ -245,9 +223,6 @@ if (!["cod", "card_on_delivery"].includes(details.paymentMethod)) {
     (subtotal + deliveryCost).toFixed(2)
   );
 
-  // ----------------------------------
-  // 8. Update public.users
-  // ----------------------------------
 
   const profileData = {
     fname: details.firstName.trim(),
@@ -269,8 +244,6 @@ if (!["cod", "card_on_delivery"].includes(details.paymentMethod)) {
     throw new Error(profileError.message);
   }
 
-  // Create a basic profile if one does not exist.
-  // The database policy restricts this to role = 'user'.
 
   if (!existingProfile) {
 
@@ -287,9 +260,6 @@ if (!["cod", "card_on_delivery"].includes(details.paymentMethod)) {
     }
   }
 
-  // ----------------------------------
-  // 9. Insert main order into orders
-  // ----------------------------------
 
   const { data: orderData, error: orderError } = await supabase
     .from("orders")
@@ -298,7 +268,7 @@ if (!["cod", "card_on_delivery"].includes(details.paymentMethod)) {
       total: total,
       status: "pending",
 
-      // Only new checkout-specific fields
+
       delivery_method: details.deliveryMethod,
       delivery_cost: deliveryCost,
       apartment: details.apartment.trim() || null,
@@ -319,9 +289,6 @@ if (!["cod", "card_on_delivery"].includes(details.paymentMethod)) {
 
   const orderId: string = orderData.order_id;
 
-  // ----------------------------------
-  // 10. Insert products into order_product
-  // ----------------------------------
 
   const orderProducts = orderLines.map((item) => ({
     order_id: orderId,
@@ -335,9 +302,6 @@ if (!["cod", "card_on_delivery"].includes(details.paymentMethod)) {
     .from("order_product")
     .insert(orderProducts);
 
-  // ----------------------------------
-  // 11. Clean up if item insertion fails
-  // ----------------------------------
 
   if (itemsError) {
 
@@ -358,9 +322,7 @@ if (!["cod", "card_on_delivery"].includes(details.paymentMethod)) {
     throw new Error(itemsError.message);
   }
 
-  // The database trigger now:
-  // 1. Reduces product stock.
-  // 2. Clears the customer's cart.
+
 
   return {
     orderId,
