@@ -10,7 +10,7 @@ export default function StatusPill({ status }: { status: string }) {
 
   return (
     <div
-      className={`flex border px-2.5 py-0.5 text-xs font-semibold items-center justify-center ${colorClass} rounded-2xl w-24 h-8`}
+      className={`inline-flex w-fit h-7 items-center justify-center whitespace-nowrap rounded-full border px-3 text-xs font-semibold ${colorClass}`}
     >
       {status}
     </div>

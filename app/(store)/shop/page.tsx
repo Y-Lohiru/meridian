@@ -1,8 +1,9 @@
 // app/shop/page.tsx
-import React, { Suspense } from "react";
+import { Suspense } from "react";
 import FilterSidebar, { ColorOption } from "@/components/ProductPage/filterSidebar";
 import ProductGrid from "@/components/ProductPage/productGrid";
 import { getProducts } from "@/lib/data/products";
+import { SHOE_CATEGORIES, SHOE_COLORS, SHOE_MATERIALS } from "@/lib/data/shoeOptions";
 
 interface PageProps {
   searchParams: Promise<{
@@ -31,21 +32,9 @@ async function ProductCatalog({ searchParams }: PageProps) {
 
 // Outer page component stays static/prerenderable
 export default function HomePage({ searchParams }: PageProps) {
-  const categoriesList = ["Boots",
-  "Loafers",
-  "Formal",
-  "Sneakers",
-  "Heels",
-  "Sandals"];
-  const colorsList: ColorOption[] = [
-    { name: "Natural", hex: "#E8DCC4" },
-    { name: "Charcoal", hex: "#333333" },
-    { name: "Smoked", hex: "#6E6B66" },
-    { name: "Brass", hex: "#C5A059" },
-    { name: "White", hex: "#FFFFFF" },
-    { name: "Oak", hex: "#B8976C" },
-  ];
-  const materialsList = ["Stoneware", "Oak", "Brass", "Travertine", "Wool", "Linen"];
+  const categoriesList = SHOE_CATEGORIES;
+  const colorsList: ColorOption[] = SHOE_COLORS;
+  const materialsList = SHOE_MATERIALS;
 
   return (
     <div className="bg-background min-h-screen text-foreground font-serif">

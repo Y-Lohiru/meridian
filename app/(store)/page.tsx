@@ -16,7 +16,6 @@ export default function HomePage() {
   );
 }*/
 import Hero from "@/components/homescreen/hero";
-import React from "react";
 // import Hero from "@/components/home screen/hero";
 
 export default function HomePage() {

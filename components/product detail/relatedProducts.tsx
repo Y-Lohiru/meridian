@@ -1,5 +1,4 @@
 // components/Product page/RelatedProducts.tsx
-import React from "react";
 import ProductCard from "@/components/ProductPage/productCard";
 import { getProducts } from "@/lib/data/products";
 

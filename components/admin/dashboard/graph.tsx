@@ -18,7 +18,7 @@ export default function ChartExample({
   return (
     <ChartContainer
       config={chartConfig}
-      className="flex-1 aspect-auto h-60 sm:h-auto sm:min-h-48 w-full bg-on-brand border border-line rounded-lg p-3 sm:p-4"
+      className="flex-1 aspect-auto h-80 lg:h-auto lg:min-h-96 w-full bg-on-brand border border-line rounded-xl p-4 sm:p-6"
     >
       <BarChart
         accessibilityLayer

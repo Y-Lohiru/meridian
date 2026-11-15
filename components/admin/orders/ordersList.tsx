@@ -59,7 +59,10 @@ export default async function RecentOrder() {
           <thead>
             <tr>
               {headers.map((header) => (
-                <th key={header} className="px-3 py-2 text-xs text-ink-muted font-semibold">
+                <th
+                  key={header}
+                  className="px-3 py-2 text-xs text-ink-muted font-semibold"
+                >
                   {header}
                 </th>
               ))}
@@ -79,7 +82,9 @@ export default async function RecentOrder() {
                     day: "numeric",
                   })}
                 </td>
-                <td className="px-3 py-3"><StatusPill status={o.status} /></td>
+                <td className="px-3 py-3">
+                  <StatusPill status={o.status} />
+                </td>
                 <td className="px-3 py-3 text-left font-semibold tabular-nums">
                   ${o.total}
                 </td>

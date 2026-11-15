@@ -1,4 +1,3 @@
-import React from 'react'
 
 const ProfileLink = ({active,url,text}:{active:boolean,url:string,text:string}) => {
   return (

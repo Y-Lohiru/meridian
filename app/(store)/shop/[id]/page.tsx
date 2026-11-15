@@ -1,5 +1,5 @@
 // app/shop/[id]/page.tsx
-import React, { Suspense } from "react";
+import { Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getProductById, getProductReviews } from "@/lib/data/products";
