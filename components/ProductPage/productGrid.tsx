@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import ProductCard from "./productCard";
 import { Product } from "./types/product";

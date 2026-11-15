@@ -1,11 +1,17 @@
-import { Product, ProductFilters } from "@/components/product detail/types/product";
+import {
+  Product,
+  ProductFilters,
+  ProductReview,
+} from "@/components/product detail/types/product";
 import { createClient } from "@/app/utils/supabase/server";
 import { cookies } from "next/headers";
-import { ProductReview } from "@/components/product detail/types/product";
 
 export async function getProducts(filters: ProductFilters): Promise<Product[]> {
+  // Supabase checks the session with Date.now(), so wait for a real request.
+  // Kept outside the try so Next.js's prerender signal isn't logged as a DB error.
+  await connection();
+  const cookieStore = await cookies();
   try {
-    const cookieStore = await cookies();
     const supabase = createClient(cookieStore);
 
     let query = supabase.from("product").select("*");
@@ -44,7 +50,7 @@ export async function getProducts(filters: ProductFilters): Promise<Product[]> {
     if (filters.search && filters.search.trim() !== "") {
       const term = filters.search.trim();
       query = query.or(
-        `"productName".ilike.%${term}%,category.ilike.%${term}%,material.ilike.%${term}%`
+        `"productName".ilike.%${term}%,category.ilike.%${term}%,material.ilike.%${term}%`,
       );
     }
 
@@ -57,7 +63,6 @@ export async function getProducts(filters: ProductFilters): Promise<Product[]> {
       query = query.order("created_at", { ascending: false });
     }
 
-
     const { data, error } = await query;
 
     let resultList: Product[] = data ?? [];
@@ -67,18 +72,18 @@ export async function getProducts(filters: ProductFilters): Promise<Product[]> {
       if (filters.category) {
         const cats = filters.category.split(",").map((c) => c.toLowerCase());
         resultList = resultList.filter((p) =>
-          cats.includes(p.category.toLowerCase())
+          cats.includes(p.category.toLowerCase()),
         );
       }
       if (filters.material) {
         const mats = filters.material.split(",").map((m) => m.toLowerCase());
         resultList = resultList.filter(
-          (p) => p.material && mats.includes(p.material.toLowerCase())
+          (p) => p.material && mats.includes(p.material.toLowerCase()),
         );
       }
       if (filters.color) {
         resultList = resultList.filter(
-          (p) => p.color?.toLowerCase() === filters.color?.toLowerCase()
+          (p) => p.color?.toLowerCase() === filters.color?.toLowerCase(),
         );
       }
       if (filters.maxPrice) {
@@ -90,12 +95,11 @@ export async function getProducts(filters: ProductFilters): Promise<Product[]> {
           (p) =>
             p.productName.toLowerCase().includes(term) ||
             p.category.toLowerCase().includes(term) ||
-            (p.material && p.material.toLowerCase().includes(term))
+            (p.material && p.material.toLowerCase().includes(term)),
         );
       }
     }
 
-    
     return resultList.filter((p): p is Product => Boolean(p) && Boolean(p.id));
   } catch (err) {
     console.error("Database query error, returning mock products:", err);
@@ -103,15 +107,17 @@ export async function getProducts(filters: ProductFilters): Promise<Product[]> {
   }
 }
 
-
 export async function getProductById(id: string): Promise<Product | null> {
+  // Supabase checks the session with Date.now(), so wait for a real request.
+  // Kept outside the try so Next.js's prerender signal isn't logged as a DB error.
+  await connection();
+  const cookieStore = await cookies();
   try {
-    const cookieStore = await cookies();
     const supabase = createClient(cookieStore);
 
     const { data, error } = await supabase
       .from("product")
-      .select('id, created_at, "productName", price, category, material, color, quantity, image_url, images, variants, details')
+      .select('id, created_at, "productName", price, category, material, color, quantity, image_url, images, variants')
       .eq("id", id)
       .single();
 
@@ -127,9 +133,14 @@ export async function getProductById(id: string): Promise<Product | null> {
   }
 }
 
-export async function getProductReviews(productId: string): Promise<ProductReview[]> {
+export async function getProductReviews(
+  productId: string,
+): Promise<ProductReview[]> {
+  // Supabase checks the session with Date.now(), so wait for a real request.
+  // Kept outside the try so Next.js's prerender signal isn't logged as a DB error.
+  await connection();
+  const cookieStore = await cookies();
   try {
-    const cookieStore = await cookies();
     const supabase = createClient(cookieStore);
 
     const { data, error } = await supabase

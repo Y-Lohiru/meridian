@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Suspense } from "react";
 
 interface OrderSuccessPageProps {
   searchParams: Promise<{
@@ -6,15 +7,32 @@ interface OrderSuccessPageProps {
   }>;
 }
 
-export default async function OrderSuccessPage({
-  searchParams,
-}: OrderSuccessPageProps) {
+// Reads ?orderId= from the URL, so it renders inside <Suspense> below
+async function OrderReference({ searchParams }: OrderSuccessPageProps) {
   const params = await searchParams;
 
   const orderId = Array.isArray(params.orderId)
     ? params.orderId[0]
     : params.orderId;
 
+  if (!orderId) return null;
+
+  return (
+    <div className="border border-line bg-surface-cream p-5 space-y-2">
+      <p className="text-xs uppercase tracking-widest text-ink-subtle">
+        Order Reference
+      </p>
+
+      <p className="text-sm font-semibold text-ink break-all">
+        {orderId}
+      </p>
+    </div>
+  );
+}
+
+export default function OrderSuccessPage({
+  searchParams,
+}: OrderSuccessPageProps) {
   return (
     <main className="min-h-screen bg-surface flex items-center justify-center px-6">
       <div className="max-w-xl w-full text-center space-y-6">
@@ -53,17 +71,9 @@ export default async function OrderSuccessPage({
 
         {/* Order Reference */}
 
-        {orderId && (
-          <div className="border border-line bg-surface-cream p-5 space-y-2">
-            <p className="text-xs uppercase tracking-widest text-ink-subtle">
-              Order Reference
-            </p>
-
-            <p className="text-sm font-semibold text-ink break-all">
-              {orderId}
-            </p>
-          </div>
-        )}
+        <Suspense fallback={null}>
+          <OrderReference searchParams={searchParams} />
+        </Suspense>
 
         <p className="text-xs text-ink-subtle">Order status: Pending</p>
 

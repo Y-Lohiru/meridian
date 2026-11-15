@@ -56,7 +56,7 @@ export default function Hero() {
         {/* Featured collection image */}
         <div className="group relative min-h-[420px] overflow-hidden bg-placeholder md:min-h-[560px]">
           <Image
-            src="/images/hero-campaign.jpg"
+            src="/Leather-boots.jpg"
             alt="Leather boots from the Meridian Autumn/Winter collection"
             fill
             priority

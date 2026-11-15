@@ -3,6 +3,7 @@
 import { cookies } from "next/headers";
 import { createClient } from "@/app/utils/supabase/server";
 import { redirect } from "next/navigation";
+import { connection } from "next/server";
 import { refresh } from "next/cache";
 
 interface RecentOrder {
@@ -19,6 +20,7 @@ interface NewProduct {
   price: number;
   quantity: number;
   category: string;
+  variants: { label: string; price: number }[];
   material: string;
   color: string;
   image_url?: string;
@@ -26,10 +28,11 @@ interface NewProduct {
 
 // Supabase client that acts as the logged-in user (reads the session cookie)
 async function getSupabase() {
+  await connection();
   return createClient(await cookies());
 }
 
-// Throws unless the logged-in user is an admin. Used before any write.
+// Throws unless the logged-in user is an admin.
 async function requireAdmin() {
   const supabase = await getSupabase();
 
@@ -55,7 +58,6 @@ async function requireAdmin() {
 }
 
 // Signout the user
-// Ends the session and sends the user to the admin login page
 async function signOut() {
   const supabase = await getSupabase();
   await supabase.auth.signOut();
@@ -88,7 +90,6 @@ async function uploadProductImage(file: File) {
 }
 
 // Function to get all the orders
-
 async function getOrders(): Promise<RecentOrder[]> {
   const supabase = await getSupabase();
 
@@ -124,7 +125,7 @@ async function getOrders(): Promise<RecentOrder[]> {
   });
 }
 
-async function getPendingOrders() : Promise<number> {
+async function getPendingOrders(): Promise<number> {
   const supabase = await getSupabase();
 
   const { data, error } = await supabase
@@ -193,6 +194,39 @@ async function getProducts() {
   return data;
 }
 
+// Function to restock products
+async function restockProduct(id: string, amount: number) {
+  const supabase = await requireAdmin();
+
+  if (!Number.isInteger(amount) || amount <= 0) return false;
+
+  const { data: product, error: readError } = await supabase
+    .from("product")
+    .select("quantity")
+    .eq("id", id)
+    .single();
+
+  if (readError || !product) {
+    console.log(readError);
+    return false;
+  }
+
+  const { data, error } = await supabase
+    .from("product")
+    .update({ quantity: product.quantity + amount })
+    .eq("id", id)
+    .select();
+
+  if (error || data.length === 0) {
+    console.log(error);
+    return false;
+  }
+
+  refresh();
+
+  return true;
+}
+
 // Function to add new products to the database
 async function addProduct(product: NewProduct) {
   const supabase = await requireAdmin();
@@ -250,6 +284,9 @@ async function getOrderStatus() {}
 async function getMonthlyRevenue() {
   const supabase = await getSupabase();
 
+  // Uses the current date, so it must only run at request time, never during prerendering
+  await connection();
+
   const start = new Date();
   start.setDate(1);
   start.setHours(0, 0, 0, 0);
@@ -294,11 +331,11 @@ async function getMonthlyRevenue() {
   return months;
 }
 
-
 export {
   uploadProductImage,
   signOut,
   addProduct,
+  restockProduct,
   removeProduct,
   getProducts,
   getOrders,
