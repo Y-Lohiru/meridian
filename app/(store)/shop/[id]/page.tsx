@@ -36,7 +36,7 @@ async function ProductDetails({ params }: ProductPageProps) {
 
   return (
     <div>
-      <nav className="eyebrow text-ink-subtle mb-8 flex flex-wrap items-center gap-2">
+      <nav aria-label="Breadcrumb" className="eyebrow text-ink-subtle mb-8 flex flex-wrap items-center gap-2">
         <Link href="/" className="hover:text-ink transition-colors">
           Home
         </Link>
@@ -45,9 +45,14 @@ async function ProductDetails({ params }: ProductPageProps) {
           Shop
         </Link>
         <span>/</span>
-        <span className="text-ink font-semibold">{product.category}</span>
+        <Link
+          href={`/shop?category=${encodeURIComponent(product.category)}`}
+          className="hover:text-ink transition-colors"
+        >
+          {product.category}
+        </Link>
         <span>/</span>
-        <span className="text-ink-subtle lowercase font-normal">
+        <span className="text-ink font-semibold" aria-current="page">
           {product.productName}
         </span>
       </nav>

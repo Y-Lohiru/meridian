@@ -14,8 +14,9 @@ export interface Product {
   color?: string;
   quantity?: number;
   image_url: string;
-  images?: string[];             // Array of gallery images
-  variants?: ProductVariant[];   // Optional size variants
+  images?: string[];             
+  variants?: ProductVariant[];
+  details?: string;   
 }
 
 export interface ProductReview {

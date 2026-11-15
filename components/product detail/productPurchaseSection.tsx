@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Product, ProductVariant } from "./types/product";
 import ProductInfo from "./productInfo";
 import { usecart } from "@/components/checkout/CartContent";
+import ShoeSizeFinder from "./shoeSizeFinder";
 
 interface ProductPurchaseSectionProps {
   product: Product;
@@ -109,6 +110,7 @@ export default function ProductPurchaseSection({
 
       <hr className="border-line" />
 
+
       {/* Conditional Size Selector */}
       {hasVariants && (
         <div className="space-y-2.5 font-sans">
@@ -121,10 +123,11 @@ export default function ProductPurchaseSection({
                   key={variant.label}
                   type="button"
                   onClick={() => setSelectedVariant(variant)}
-                  className={`p-3.5 text-left border transition-all cursor-pointer ${isSelected
+                  className={`p-3.5 text-left border transition-all cursor-pointer ${
+                    isSelected
                       ? "border-brand bg-surface-selected text-ink"
                       : "border-line bg-surface text-ink-muted hover:border-ink"
-                    }`}
+                  }`}
                 >
                   <div className="text-xs font-semibold text-ink">
                     {variant.label}
@@ -141,6 +144,11 @@ export default function ProductPurchaseSection({
         </div>
       )}
 
+  {/* Find Your Size */}
+      <ShoeSizeFinder
+        variants={variants}
+        onSelectVariant={(variant) => setSelectedVariant(variant)}
+      />
 
       {/* Quantity & Dynamic Add to Bag Button */}
       <div className="space-y-5 font-sans">
