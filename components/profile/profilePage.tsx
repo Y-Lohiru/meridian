@@ -140,17 +140,17 @@ const deleteAccount = async () => {
                 <p className='mt-2 border-t border-white/20 pt-2 font-brand text-xs tracking-widest text-white/80'>MEMBER SINCE 2025</p>
             </div>
             <div className="flex w-full flex-col divide-y divide-brand/10 border-b border-brand/10 py-4 text-sm">
-                <ProfileLink active={false} url="/profile" text="Profile"/>
-                <ProfileLink active={true} url="/orders" text="My Orders"/>
-                <ProfileLink active={false} url="/addresses" text="Saved Addresses"/>
-                <ProfileLink active={false} url="/settings" text="Password & Preferences"/>
-                <ProfileLink active={false} url="/logout" text="Logout"/>
+                <ProfileLink active={false} url="#profile" text="Profile"/>
+                <ProfileLink active={false} url="#orders" text="My Orders"/>
+                <ProfileLink active={false} url="#addresses" text="Saved Addresses"/>
+                <ProfileLink active={false} url="#settings" text="Password & Preferences"/>
+                <ProfileLink active={false} url="#logout" text="Logout"/>
                 
                       </div>
         </div>
         <div className="flex w-full min-w-0 flex-1 flex-col">
         <div className="flex w-full items-center justify-between">
-          <h2 className='mb-4 text-3xl font-brand text-brand'>My details</h2>
+          <h2 id='profile' className='mb-4 text-3xl font-brand text-brand'>My details</h2>
           <Button className="rounded-sm border border-brand/30 bg-transparent px-4 py-2 text-xs tracking-widest text-brand no-underline hover:bg-brand hover:text-white" variant={!editing ? 'outline' : 'secondary'} onClick={()=>[!editing ? setEditing((prev)=>!prev) : changeProfile()]}>{!editing?'Edit' : 'Save'}</Button>
         </div>
           <hr className='border-brand/15'/>
@@ -174,7 +174,7 @@ const deleteAccount = async () => {
          </div>
         </div>
         <div className="mt-10 flex flex-col border-t border-brand/15 pt-8">
-          <h2 className='mb-3 text-3xl font-brand text-brand'>Recent orders</h2>
+          <h2 id='orders' className='mb-3 text-3xl font-brand text-brand'>Recent orders</h2>
        {     Orders.length > 0? (
 <>
        {Orders.map((id, index) => (
@@ -188,7 +188,7 @@ const deleteAccount = async () => {
 
 
           <div className="mt-10 flex flex-col border-t border-brand/15 pt-8">
-          <h2 className='text-3xl font-brand text-brand'>Saved addresses</h2>
+          <h2 id='addresses' className='text-3xl font-brand text-brand'>Saved addresses</h2>
             <div className="grid grid-cols-1 gap-4 py-4 sm:grid-cols-2 xl:grid-cols-3">
               <div className="flex min-h-40 w-full flex-col gap-1 rounded-sm border border-brand bg-brand/5 p-4">
                 <label className='font-brand text-brand text-xs tracking-widest text-wrap '>ADDRESS 1</label>
@@ -199,7 +199,7 @@ const deleteAccount = async () => {
             </div>
 
           <div className="mt-10 flex flex-col border-t border-brand/15 pt-8">
-              <h2 className='mb-4 text-3xl font-brand text-brand'>Password & preferences</h2>
+              <h2 id='settings' className='mb-4 text-3xl font-brand text-brand'>Password & preferences</h2>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
                 <div className="flex flex-col gap-2">
                   <label className='font-brand text-brand text-xs tracking-widest'>CHANGE PASSWORD</label>
@@ -208,7 +208,7 @@ const deleteAccount = async () => {
                 </div>
               </div>
               <hr className='my-6 border-brand/15'/>
-            <a href='#' className='w-fit font-brand text-sm text-red-600 underline transition hover:text-red-800' onClick={deleteAccount}>Delete my account</a>
+            <a href='#settings' className='w-fit font-brand text-sm text-red-600 underline transition hover:text-red-800' onClick={deleteAccount}>Delete my account</a>
             </div>
                   </div>
         
