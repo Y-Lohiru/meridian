@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Product } from "@/components/product detail/types/product";
 
 import { SHOE_CATEGORIES as shoeCategories } from "@/lib/data/shoeOptions";
@@ -15,9 +15,10 @@ function sameCategory(a?: string, b?: string) {
   return a?.toLowerCase() === b?.toLowerCase();
 }
 
-function isNew(createdAt?: string) {
-  if (!createdAt) return false;
-  const ageMs = Date.now() - new Date(createdAt).getTime();
+// `now` is null until the page has loaded in the browser (see useEffect below)
+function isNew(createdAt: string | undefined, now: number | null) {
+  if (!createdAt || now === null) return false;
+  const ageMs = now - new Date(createdAt).getTime();
   return ageMs < NEW_FOR_DAYS * 24 * 60 * 60 * 1000;
 }
 
@@ -28,6 +29,12 @@ function hasImage(url?: string | null): url is string {
 export default function TheEdit({ products }: { products: Product[] }) {
   const [activeCategory, setActiveCategory] = useState("All");
   const [brokenImages, setBrokenImages] = useState<Set<string>>(new Set());
+
+  // Read the current time only in the browser, never while Next.js prerenders
+  const [now, setNow] = useState<number | null>(null);
+  useEffect(() => {
+    setNow(Date.now());
+  }, []);
 
   // Only shoes appear in The Edit, even if other items are still in the database
   const shoes = products.filter((product) =>
@@ -99,7 +106,7 @@ export default function TheEdit({ products }: { products: Product[] }) {
                   </div>
                 )}
 
-                {isNew(product.created_at) && (
+                {isNew(product.created_at, now) && (
                   <span className="absolute left-3 top-3 bg-surface px-3 py-2 text-2xs tracking-button text-ink">
                     NEW
                   </span>
