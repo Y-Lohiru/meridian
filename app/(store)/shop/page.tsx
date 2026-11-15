@@ -36,10 +36,7 @@ export default function HomePage({ searchParams }: PageProps) {
   "Formal",
   "Sneakers",
   "Heels",
-  "Sandals",
-  "Lighting",
-  "Furniture",
-  "Ceramics"];
+  "Sandals"];
   const colorsList: ColorOption[] = [
     { name: "Natural", hex: "#E8DCC4" },
     { name: "Charcoal", hex: "#333333" },
@@ -54,11 +51,11 @@ export default function HomePage({ searchParams }: PageProps) {
     <div className="bg-background min-h-screen text-foreground font-serif">
       <main className="max-w-7xl mx-auto px-4 md:px-8 py-8">
         <h1 className="text-4xl md:text-5xl font-light tracking-tight mb-3">
-          Home & Living
+          The Collection
         </h1>
         <p className="max-w-xl text-sm md:text-base text-muted-foreground font-sans font-light leading-relaxed mb-8">
-          Furniture, lighting and objects made to be lived with—built by small
-          workshops and chosen for how they age.
+          Boots, loafers and dress shoes hand-lasted in full-grain leather by
+          small family workshops, and chosen for how they age.
         </p>
 
         <div className="flex gap-8 items-start">

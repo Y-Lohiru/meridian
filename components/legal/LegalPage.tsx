@@ -30,7 +30,6 @@ export default function LegalPage({
 }: LegalPageProps) {
   return (
     <div className="flex min-h-screen flex-col bg-surface text-ink">
-      <Header />
 
       <main className="flex-1">
         {/* Title block */}
@@ -104,7 +103,6 @@ export default function LegalPage({
         </div>
       </main>
 
-      <Footer />
     </div>
   );
 }

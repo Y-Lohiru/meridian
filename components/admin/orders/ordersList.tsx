@@ -1,4 +1,5 @@
 import { getOrders } from "@/app/utils/queries/admin";
+import StatusPill from "./statusPill";
 
 export default async function RecentOrder() {
   const orders = await getOrders();
@@ -30,7 +31,7 @@ export default async function RecentOrder() {
               <span
                 className={`rounded-full border px-2.5 py-0.5 text-xs font-semibold ${statusClass(o.status)}`}
               >
-                {o.status}
+                <StatusPill status={o.status} />
               </span>
             </div>
 
@@ -58,7 +59,7 @@ export default async function RecentOrder() {
           <thead>
             <tr>
               {headers.map((header) => (
-                <th className="px-3 py-2 text-xs text-ink-muted font-semibold">
+                <th key={header} className="px-3 py-2 text-xs text-ink-muted font-semibold">
                   {header}
                 </th>
               ))}
@@ -78,8 +79,8 @@ export default async function RecentOrder() {
                     day: "numeric",
                   })}
                 </td>
-                <td className="px-3 py-3">{o.status}</td>
-                <td className="px-3 py-3 text-right font-semibold tabular-nums">
+                <td className="px-3 py-3"><StatusPill status={o.status} /></td>
+                <td className="px-3 py-3 text-left font-semibold tabular-nums">
                   ${o.total}
                 </td>
               </tr>

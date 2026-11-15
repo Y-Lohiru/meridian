@@ -10,10 +10,13 @@ import { usecart } from "@/components/checkout/CartContent";
 
 
 const navigation = [
-  { name: "Fashion", href: "/shop?category=Boots,Loafers,Formal,Sneakers,Heels,Sandals" },
-  { name: "Home & Living", href: "/shop?category=Lighting,Furniture,Ceramics" },
-  { name: "Beauty", href: "/shop" },
-  { name: "Technology", href: "/shop" },
+  { name: "All Shoes", href: "/shop" },
+  { name: "Boots", href: "/shop?category=Boots" },
+  { name: "Loafers", href: "/shop?category=Loafers" },
+  { name: "Formal", href: "/shop?category=Formal" },
+  { name: "Sneakers", href: "/shop?category=Sneakers" },
+  { name: "Heels", href: "/shop?category=Heels" },
+  { name: "Sandals", href: "/shop?category=Sandals" },
 ];
 
 export default function Header() {
@@ -52,11 +55,11 @@ export default function Header() {
   return (
     <header className="w-full bg-brand text-white">
       {/* Announcement bar */}
-      <div className="bg-brand-deep px-4 py-2.5 text-center text-2xs tracking-button text-on-brand-soft">
+      {/* <div className="bg-brand-deep px-4 py-2.5 text-center text-2xs tracking-button text-on-brand-soft">
         Complimentary delivery on orders over [AMOUNT]
         <span className="mx-2">·</span>
         Free returns within 30 days
-      </div>
+      </div> */}
 
       {/* Navigation */}
       <div className="mx-auto flex max-w-[85rem] items-center justify-between border-b border-white/20 px-4 py-5 md:px-10">

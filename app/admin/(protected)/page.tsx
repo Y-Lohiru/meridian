@@ -1,8 +1,8 @@
-import AdminHeader from "@/components/admin/header";
-import LowStockList from "@/components/admin/lowStockList";
-import RecentOrder from "@/components/admin/recentOrder";
-import RevenueChart from "@/components/admin/revenuChart";
-import SummarySection from "@/components/admin/summary";
+import AdminHeader from "@/components/admin/dashboard/header";
+import LowStockList from "@/components/admin/dashboard/lowStockList";
+import RecentOrder from "@/components/admin/dashboard/recentOrder";
+import RevenueChart from "@/components/admin/dashboard/revenuChart";
+import SummarySection from "@/components/admin/dashboard/summary";
 import { Suspense } from "react";
 export default function AdminDashboard() {
   return (
