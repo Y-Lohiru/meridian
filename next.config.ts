@@ -2,8 +2,10 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
-  cacheComponents: true,
-  partialPrefetching: true,
+  // Off because Cache Components hang on Cloudflare Workers (Error 1101):
+  // Next.js relies on setTimeout() behaviour the Workers runtime doesn't have
+  cacheComponents: false,
+  partialPrefetching: false,
   experimental: {
     serverActions: {
       bodySizeLimit: "5mb",
