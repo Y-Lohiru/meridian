@@ -1,15 +1,14 @@
-import { getOrders } from "@/app/utils/queries/admin"
 import OrderList from "@/components/admin/orders/ordersList";
 import OrdersHeader from "@/components/admin/orders/header";
+import { Suspense } from "react";
 
 export default function Orders() {
-    const orders = getOrders();
-
     return (
         <div>
             <OrdersHeader />
-            <OrderList />
-            
+            <Suspense fallback={<p className="text-sm text-ink-muted">Loading orders...</p>}>
+                <OrderList />
+            </Suspense>
         </div>
     )
 }
