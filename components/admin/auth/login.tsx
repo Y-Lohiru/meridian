@@ -53,11 +53,15 @@ export default function LoginPage() {
       >
         <div className="flex flex-col gap-1">
           <span className="text-brand text-3xl font-display">Admin login</span>
-          <span className="text-sm text-black/50">Sign in to manage your store</span>
+          <span className="text-sm text-black/50">
+            Sign in to manage your store
+          </span>
         </div>
 
         <div className="flex flex-col gap-1">
-          <label htmlFor="email" className="text-sm font-medium">Email</label>
+          <label htmlFor="email" className="text-sm font-medium">
+            Email
+          </label>
           <input
             id="email"
             type="email"
@@ -69,7 +73,9 @@ export default function LoginPage() {
         </div>
 
         <div className="flex flex-col gap-1">
-          <label htmlFor="password" className="text-sm font-medium">Password</label>
+          <label htmlFor="password" className="text-sm font-medium">
+            Password
+          </label>
           <input
             id="password"
             type="password"
@@ -86,7 +92,7 @@ export default function LoginPage() {
           type="submit"
           disabled={loading}
           className="h-10 rounded-md bg-brand text-white font-medium hover:opacity-90 disabled:opacity-60"
-        >x
+        >
           {loading ? "Signing in..." : "Login"}
         </button>
       </form>

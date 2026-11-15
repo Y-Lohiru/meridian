@@ -5,15 +5,15 @@ const benefits = [
   },
   {
     title: "30-day returns",
-    description: "Free and easy, collected from wherever you are.",
+    description: "Free on unworn pairs, collected from wherever you are.",
   },
   {
-    title: "Signature gift wrapping",
-    description: "Hand-finished in our black box with a written note.",
+    title: "Resoling for life",
+    description: "Send your pair back to the workshop to be resoled and restored.",
   },
   {
-    title: "Personal concierge",
-    description: "Styling, gifting and product advice, seven days a week.",
+    title: "Fitting concierge",
+    description: "Sizing, width and care advice from our specialists, seven days a week.",
   },
 ];
 

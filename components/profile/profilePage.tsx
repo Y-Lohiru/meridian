@@ -2,14 +2,11 @@
 import React, { useEffect } from 'react'
 import ProfileIcon from '../admin/profileIcon'
 import ProfileLink from './ProfileLink'
-import RecentOrder from '../admin/recentOrder'
 import checkUser from '@/app/utils/auth';
 import { createClient } from '@/app/utils/supabase/client';
 import { redirect } from 'next/navigation';
 import Order from './Order';
 import Button from '../checkout/Button';
-import SignOutButton from '../admin/auth/signOutButton';
-import { LogOut } from 'lucide-react';
 
 interface Profile {
     id:string;
@@ -137,7 +134,7 @@ const deleteAccount = async () => {
       <div className="flex flex-col gap-8 md:flex-row md:gap-12">
         <div className="flex w-full shrink-0 flex-col md:w-60">
             <div className="flex flex-col gap-1.5 rounded-sm bg-brand p-5 text-white">
-                <ProfileIcon></ProfileIcon>
+                <ProfileIcon name={user?.fname ?? ""}></ProfileIcon>
                 <p>{user?.fname} {user?.lname}</p>
                 <small>{user?.email}</small>
                 <p className='mt-2 border-t border-white/20 pt-2 font-brand text-xs tracking-widest text-white/80'>MEMBER SINCE 2025</p>

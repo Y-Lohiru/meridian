@@ -1,9 +1,7 @@
 import { getProducts } from "@/app/utils/queries/admin";
-import { removeProduct } from "@/app/utils/queries/admin";
-import { refresh } from "next/cache";
 import RemoveButton from "./removeButton";
-import Header from "./header";
 import Image from "next/image";
+import { getColorHex } from "@/lib/data/shoeOptions";
 
 export default async function ProductList() {
   const products = await getProducts();
@@ -17,24 +15,6 @@ export default async function ProductList() {
     "STOCK",
     "ACTION",
   ];
-
-  const colorClass: Record<string, string> = {
-    Black: "bg-black",
-    Brass: "bg-yellow-600",
-    Burgundy: "bg-red-900",
-    Charcoal: "bg-neutral-700",
-    Chestnut: "bg-amber-800",
-    Cognac: "bg-orange-800",
-    Emerald: "bg-emerald-700",
-    Gold: "bg-yellow-400",
-    Natural: "bg-stone-200",
-    Navy: "bg-blue-950",
-    Oak: "bg-amber-600",
-    "Off-white": "bg-stone-50",
-    Sand: "bg-amber-200",
-    Smoked: "bg-stone-500",
-    Tobacco: "bg-amber-900",
-  };
 
   return (
     <div className="m-2.5 bg-on-brand border rounded-2xl p-3 sm:p-4">
@@ -74,7 +54,8 @@ export default async function ProductList() {
                   {product.color}
                   <div className="flex items-center gap-2">
                     <div
-                      className={`rounded-full w-4 h-4 border ${colorClass[product.color] ?? "bg-gray-300"}`}
+                      className="rounded-full w-4 h-4 border"
+                      style={{ backgroundColor: getColorHex(product.color) ?? "#D1D5DB" }}
                     ></div>
                   </div>
                 </td>

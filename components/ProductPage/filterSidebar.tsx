@@ -1,7 +1,7 @@
 // components/Product page/filterSidebar.tsx
 "use client";
 
-import React, { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 export interface ColorOption {

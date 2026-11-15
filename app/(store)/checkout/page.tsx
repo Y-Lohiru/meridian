@@ -1,10 +1,7 @@
-// app/checkout/page.tsx
 "use client";
-import React, { useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import CheckoutForm from "@/components/checkout/CheckoutForm";
-import { CartProvider } from "@/components/checkout/CartContent";
-import CartDrawer from "@/components/checkout/CartDrawer";
 import { usecart } from "@/components/checkout/CartContent";
 
 export default function CheckoutPage() {
@@ -34,7 +31,6 @@ export default function CheckoutPage() {
 
   return (
     <div className="min-h-screen bg-surface text-[#332218] font-sans">
-      {/* Top Bar / Header */}
       <header className="border-b border-line px-8 py-6 flex justify-between items-center bg-surface">
         <Link
           href="/"
@@ -48,9 +44,8 @@ export default function CheckoutPage() {
         </span>
       </header>
 
-      {/* Main Checkout Grid */}
       <main className="max-w[85rem] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 px-6 lg:px-12 py-12">
-        {/* Left Column: Form */}
+        {/* Left */}
         <div className="lg:col-span-7">
           <CheckoutForm
             deliveryMethod={deliveryMethod}
@@ -59,7 +54,7 @@ export default function CheckoutPage() {
           />
         </div>
 
-        {/* Right Column: Order Summary */}
+        {/* Right Summary */}
         <div className="lg:col-span-5 bg-surface-cream p-8 h-fit border border-line space-y-6">
           <div className="flex justify-between items-center border-b border-line pb-4">
             <h3 className="font-display text-lg">Your bag</h3>
@@ -68,7 +63,7 @@ export default function CheckoutPage() {
             </span>
           </div>
 
-          {/* Cart Item List */}
+          {/* Cartitms */}
           <div className="divide-y divide-line">
             {cartItems.map((item) => (
               <div
@@ -109,7 +104,7 @@ export default function CheckoutPage() {
             ))}
           </div>
 
-          {/* Promo Code Input */}
+          {/* 
           <div className="flex space-x-2 pt-2">
             <input
               type="text"
@@ -121,9 +116,9 @@ export default function CheckoutPage() {
             <button className="bg-brand text-on-brand px-5 text-xs uppercase tracking-button">
               Apply
             </button>
-          </div>
+          </div> */}
 
-          {/* Cost Totals */}
+          {/* Totals */}
           <div className="space-y-3 pt-4 border-t border-line text-sm">
             <div className="flex justify-between">
               <span className="text-ink-subtle">Subtotal</span>
@@ -147,7 +142,6 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          {/* Footer Info inside Summary */}
           <div className="pt-6 border-t border-line text-xs text-ink-subtle space-y-2">
             <p>↺ Free returns within 30 days</p>
             <p>📞 Questions? Our concierge is on-call 7 days a week</p>

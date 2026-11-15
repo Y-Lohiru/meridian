@@ -93,9 +93,10 @@ export async function placeOrder(
     throw new Error("Please complete all required checkout fields.");
   }
 
-  if (!["cod", "bank"].includes(details.paymentMethod)) {
-    throw new Error("Invalid payment method.");
-  }
+  
+if (!["cod", "card_on_delivery"].includes(details.paymentMethod)) {
+  throw new Error("Invalid payment method.");
+}
 
   // ----------------------------------
   // 3. Retrieve customer's cart

@@ -1,5 +1,5 @@
 // app/shop/[id]/page.tsx
-import React, { Suspense } from "react";
+import { Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getProductById, getProductReviews } from "@/lib/data/products";
@@ -14,7 +14,10 @@ interface ProductPageProps {
   params: Promise<{ id: string }>;
 }
 
-async function ProductDetails({ id }: { id: string }) {
+async function ProductDetails({ params }: ProductPageProps) {
+  // Read the id here, inside <Suspense>, so the rest of the page can be prerendered
+  const { id } = await params;
+
   // Fetch product details and reviews concurrently from Supabase
   const [product, reviews] = await Promise.all([
     getProductById(id),
@@ -103,9 +106,7 @@ async function ProductDetails({ id }: { id: string }) {
   );
 }
 
-export default async function ProductDetailPage({ params }: ProductPageProps) {
-  const { id } = await params;
-
+export default function ProductDetailPage({ params }: ProductPageProps) {
   return (
     <div className="bg-surface min-h-screen text-ink">
       <main className="max-w-site mx-auto px-gutter-mobile md:px-gutter py-8">
@@ -116,7 +117,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
             </div>
           }
         >
-          <ProductDetails id={id} />
+          <ProductDetails params={params} />
         </Suspense>
       </main>
     </div>

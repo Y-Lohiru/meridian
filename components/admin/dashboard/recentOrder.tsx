@@ -1,4 +1,6 @@
 import { getRecentOrders } from "@/app/utils/queries/admin";
+import StatusPill from "../orders/statusPill";
+import Link from "next/link";
 
 export default async function RecentOrder() {
   const orders = await getRecentOrders();
@@ -15,9 +17,17 @@ export default async function RecentOrder() {
   }
 
   return (
-    <div className="lg:bg-on-brand lg:p-4 lg:border lg:border-line lg:rounded-lg">
-      <span className="text-sm text-ink font-semibold">Recent Orders</span>
-      <ul className="flex flex-col gap-2.5 mt-3 lg:hidden">
+    <div className="lg:bg-on-brand lg:px-6 lg:pt-6 lg:pb-2 lg:border lg:border-line lg:rounded-xl">
+      <div className="flex items-center justify-between gap-3">
+        <span className="text-base text-ink font-semibold">Recent Orders</span>
+        <Link
+          href="/admin/orders"
+          className="text-sm font-medium text-brand hover:underline underline-offset-4"
+        >
+          View all orders →
+        </Link>
+      </div>
+      <ul className="flex flex-col gap-3 mt-4 lg:hidden">
         {orders.map((o) => (
           <li
             key={o.orderId}
@@ -27,11 +37,8 @@ export default async function RecentOrder() {
               <span className="text-sm font-bold text-ink">
                 #{o.orderId.slice(0, 8).toUpperCase()}
               </span>
-              <span
-                className={`rounded-full border px-2.5 py-0.5 text-xs font-semibold ${statusClass(o.status)}`}
-              >
-                {o.status}
-              </span>
+
+              <StatusPill status={o.status} />
             </div>
 
             <span className="truncate text-sm text-ink-muted">
@@ -53,12 +60,15 @@ export default async function RecentOrder() {
         ))}
       </ul>
 
-      <div className="hidden lg:block overflow-x-auto mt-3 -mx-4 px-4 sm:mx-0 sm:px-0">
-        <table className="w-full whitespace-nowrap text-left text-sm">
+      <div className="hidden lg:block overflow-x-auto mt-6">
+        <table className="w-full whitespace-nowrap text-left text-sm text-ink">
           <thead>
             <tr>
               {headers.map((header) => (
-                <th className="px-3 py-2 text-xs text-ink-muted font-semibold">
+                <th
+                  key={header}
+                  className={`px-3 pb-3 text-xs tracking-wider text-ink-muted font-medium first:pl-0 last:pr-0 ${header === "TOTAL" ? "text-right" : ""}`}
+                >
                   {header}
                 </th>
               ))}
@@ -67,19 +77,21 @@ export default async function RecentOrder() {
           <tbody>
             {orders.map((o) => (
               <tr key={o.orderId} className="border-t border-line">
-                <td className="px-3 py-3 font-semibold max-w-24 truncate">
-                  {o.orderId}
+                <td className="pl-0 pr-3 py-4 font-semibold">
+                  #{o.orderId.slice(0, 8).toUpperCase()}
                 </td>
-                <td className="px-3 py-3">{o.customerName}</td>
-                <td className="px-3 py-3">{o.itemName}</td>
-                <td className="px-3 py-3 text-ink-muted">
+                <td className="px-3 py-4">{o.customerName}</td>
+                <td className="px-3 py-4">{o.itemName}</td>
+                <td className="px-3 py-4">
                   {new Date(o.createdAt).toLocaleDateString("en-US", {
                     month: "short",
                     day: "numeric",
                   })}
                 </td>
-                <td className="px-3 py-3">{o.status}</td>
-                <td className="px-3 py-3 text-right font-semibold tabular-nums">
+                <td className="px-3 py-4">
+                  <StatusPill status={o.status} />
+                </td>
+                <td className="pl-3 pr-0 py-4 text-right font-semibold tabular-nums">
                   ${o.total}
                 </td>
               </tr>

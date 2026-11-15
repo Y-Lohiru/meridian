@@ -1,7 +1,7 @@
 // components/Product page/ProductPurchaseSection.tsx
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { Product, ProductVariant } from "./types/product";
 import ProductInfo from "./productInfo";
 import { usecart } from "@/components/checkout/CartContent";
@@ -121,15 +121,13 @@ export default function ProductPurchaseSection({
                   key={variant.label}
                   type="button"
                   onClick={() => setSelectedVariant(variant)}
-                  className={`p-3.5 text-left border transition-all cursor-pointer ${
-                    isSelected
+                  className={`p-3.5 text-left border transition-all cursor-pointer ${isSelected
                       ? "border-brand bg-surface-selected text-ink"
                       : "border-line bg-surface text-ink-muted hover:border-ink"
-                  }`}
+                    }`}
                 >
-                  <div className="flex justify-between items-center text-xs font-semibold text-ink">
-                    <span>{variant.label}</span>
-                    <span>${variant.price}</span>
+                  <div className="text-xs font-semibold text-ink">
+                    {variant.label}
                   </div>
                   {variant.dimensions && (
                     <div className="text-[11px] text-ink-subtle mt-1">
@@ -142,6 +140,7 @@ export default function ProductPurchaseSection({
           </div>
         </div>
       )}
+
 
       {/* Quantity & Dynamic Add to Bag Button */}
       <div className="space-y-5 font-sans">
@@ -175,9 +174,8 @@ export default function ProductPurchaseSection({
             type="button"
             onClick={handleAddToCart}
             disabled={isOutOfStock || isAdding || isCartLoading}
-            className={`flex-1 h-button text-xs tracking-button uppercase font-semibold text-on-brand transition-all cursor-pointer ${
-              added ? "bg-emerald-800" : "bg-brand hover:bg-brand-deep"
-            } disabled:opacity-50 disabled:cursor-not-allowed`}
+            className={`flex-1 h-button text-xs tracking-button uppercase font-semibold text-on-brand transition-all cursor-pointer ${added ? "bg-emerald-800" : "bg-brand hover:bg-brand-deep"
+              } disabled:opacity-50 disabled:cursor-not-allowed`}
           >
             {isAdding
               ? "Adding..."

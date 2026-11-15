@@ -1,7 +1,7 @@
 // components/Product page/ProductInfo.tsx
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { Product } from "./types/product";
 
 interface ProductInfoProps {
@@ -28,9 +28,9 @@ export default function ProductInfo({ product }: ProductInfoProps) {
         </button>
         {openTab === "details" && (
           <div className="mt-3 text-ink-muted leading-relaxed space-y-1.5 font-sans">
-            <p>Solid alabaster shade and base, hand-turned and polished.</p>
-            <p>Brushed brass fittings with a linen-wrapped cord.</p>
-            <p>Dimmable; takes one E26 LED bulb, included.</p>
+            <p>Hand-lasted in a family workshop, with a leather lining and insole.</p>
+            <p>Stitched construction, built to be resoled.</p>
+            <p>Comes with dust bags and cedar shoe trees.</p>
             {product.color && <p>Color: <strong className="text-ink font-normal">{product.color}</strong></p>}
             {product.material && <p>Material: <strong className="text-ink font-normal">{product.material}</strong></p>}
           </div>
@@ -48,7 +48,9 @@ export default function ProductInfo({ product }: ProductInfoProps) {
         </button>
         {openTab === "care" && (
           <div className="mt-3 text-ink-muted leading-relaxed space-y-1.5 font-sans">
-            <p>Wipe clean with a soft dry cloth. Avoid harsh chemicals.</p>
+            <p>Brush off dirt after each wear and rest with shoe trees between wears.</p>
+            <p>Condition leather every few months; use a suede brush and protector spray for suede.</p>
+            <p>Send your pair back to us for resoling when the sole wears through.</p>
           </div>
         )}
       </div>

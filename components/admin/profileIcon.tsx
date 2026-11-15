@@ -1,8 +1,9 @@
 import Link from "next/link";
 
-export default function ProfileIcon() {
-  const letter = "A";
-  const name = "Name";
+export default function ProfileIcon({ name }: {name: string}) {
+
+  const letter = name.charAt(0).toUpperCase();
+
 
   return (
     <div className="flex flex-col gap-4 px-3 text-white">

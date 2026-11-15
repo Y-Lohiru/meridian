@@ -1,5 +1,4 @@
 // components/Product page/ReviewSummary.tsx
-import React from "react";
 import { ProductReview } from "./types/product";
 
 interface ReviewSummaryProps {

@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/router";
 import { FiLogOut } from "react-icons/fi";
 import { signOut } from "@/app/utils/queries/admin";
 
