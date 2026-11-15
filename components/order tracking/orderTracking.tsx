@@ -235,7 +235,7 @@ const fetchOrderedProducts = async (id: string) => {
               ORDER REFERENCE
             </p>
             <h2 className="font-display text-3xl md:text-4xl">
-              {order.number}
+              {order.number.slice(0, 8)}
             </h2>
             <p className="mt-2 text-sm text-ink-muted">
               Placed on {order.placedOn}
