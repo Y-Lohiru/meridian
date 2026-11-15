@@ -4,24 +4,16 @@ import Link from "next/link";
 import { useState } from "react";
 import type { Product } from "@/components/product detail/types/product";
 
-// Department tab -> product categories stored in the database
-const departments: Record<string, string[]> = {
-  Fashion: ["Boots", "Loafers", "Formal", "Sneakers", "Heels", "Sandals"],
-  "Home & Living": ["Lighting", "Furniture", "Ceramics"],
-  Beauty: [],
-  Technology: [],
-};
+// Shoe categories stored in the database
+const shoeCategories = ["Boots", "Loafers", "Formal", "Sneakers", "Heels", "Sandals"];
 
-const categories = ["All", ...Object.keys(departments)];
+const categories = ["All", ...shoeCategories];
 
 const MAX_PRODUCTS = 8;
 const NEW_FOR_DAYS = 30;
 
-function getDepartment(category: string) {
-  const match = Object.entries(departments).find(([, cats]) =>
-    cats.some((c) => c.toLowerCase() === category?.toLowerCase())
-  );
-  return match ? match[0] : category;
+function sameCategory(a?: string, b?: string) {
+  return a?.toLowerCase() === b?.toLowerCase();
 }
 
 function isNew(createdAt?: string) {
@@ -38,12 +30,15 @@ export default function TheEdit({ products }: { products: Product[] }) {
   const [activeCategory, setActiveCategory] = useState("All");
   const [brokenImages, setBrokenImages] = useState<Set<string>>(new Set());
 
+  // Only shoes appear in The Edit, even if other items are still in the database
+  const shoes = products.filter((product) =>
+    shoeCategories.some((c) => sameCategory(c, product.category))
+  );
+
   const filteredProducts = (
     activeCategory === "All"
-      ? products
-      : products.filter(
-          (product) => getDepartment(product.category) === activeCategory
-        )
+      ? shoes
+      : shoes.filter((product) => sameCategory(product.category, activeCategory))
   ).slice(0, MAX_PRODUCTS);
 
   return (
@@ -131,7 +126,7 @@ export default function TheEdit({ products }: { products: Product[] }) {
 
         {filteredProducts.length === 0 && (
           <p className="py-10 text-center text-sm text-ink-subtle">
-            No products in this department yet.
+            No pairs in this style yet — check back soon.
           </p>
         )}
 
@@ -140,7 +135,7 @@ export default function TheEdit({ products }: { products: Product[] }) {
             href="/shop"
             className="inline-flex min-h-14 items-center border border-brand px-9 text-2xs font-semibold tracking-button text-brand transition-colors hover:bg-brand hover:text-on-brand"
           >
-            VIEW THE WHOLE EDIT
+            VIEW ALL SHOES
           </Link>
         </div>
       </div>

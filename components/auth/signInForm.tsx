@@ -100,7 +100,7 @@ export default function SignInForm() {
               <span className="font-sans">
                 I agree to the{" "}
                 <a
-                  href="/terms"
+                  href="/Policies/terms"
                   className="text-bold font-sans  text-brand underline"
                 >
                   Terms and Conditions
@@ -115,6 +115,15 @@ export default function SignInForm() {
               SIGN IN{" "}
             </button>
           </form>
+          <p className="font-sans mt-6 text-sm text-center">
+            Staff member?{" "}
+            <a
+              href="/admin"
+              className="text-bold font-sans  text-brand underline"
+            >
+              Admin login
+            </a>
+          </p>
         </div>
       </div>
     </div>

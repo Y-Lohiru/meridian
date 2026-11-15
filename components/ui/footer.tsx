@@ -2,10 +2,13 @@
 import Link from "next/link";
 
 const shopLinks = [
-  { name: "Fashion", href: "/shop?category=Boots,Loafers,Formal,Sneakers,Heels,Sandals" },
-  { name: "Home & Living", href: "/shop?category=Lighting,Furniture,Ceramics" },
-  { name: "Beauty", href: "/shop" },
-  { name: "Technology", href: "/shop" },
+  { name: "All Shoes", href: "/shop" },
+  { name: "Boots", href: "/shop?category=Boots" },
+  { name: "Loafers", href: "/shop?category=Loafers" },
+  { name: "Formal", href: "/shop?category=Formal" },
+  { name: "Sneakers", href: "/shop?category=Sneakers" },
+  { name: "Heels", href: "/shop?category=Heels" },
+  { name: "Sandals", href: "/shop?category=Sandals" },
 ];
 
 export default function Footer() {

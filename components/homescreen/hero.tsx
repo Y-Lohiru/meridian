@@ -4,7 +4,7 @@ import { Suspense } from "react";
 
 import ShopByDepartment from "./shopByDep";
 import TheEdit from "./theEdit";
-import WinterHouse from "./serviceHighlights";
+import WinterBoot from "./serviceHighlights";
 import Benefits from "./benifits";
 import { getProducts } from "@/lib/data/products";
 
@@ -27,13 +27,13 @@ export default function Hero() {
           </p>
 
           <h1 className="font-display text-hero font-normal tracking-tightest">
-            Everything worth having.
+            Made to be worn for decades.
           </h1>
 
           <p className="mt-7 max-w-md text-base leading-relaxed text-ink-muted">
-            One house for fashion, home, beauty and technology.
-            Every piece is chosen by hand — nothing is here to
-            fill a shelf.
+            Hand-lasted shoes in full-grain leather, from small
+            family workshops that have been doing it for generations.
+            Every pair is built to be resoled, not replaced.
           </p>
 
           <div className="mt-9 flex flex-wrap gap-3">
@@ -45,10 +45,10 @@ export default function Hero() {
             </Link>
 
             <Link
-              href="#departments"
+              href="#categories"
               className="flex min-h-14 items-center justify-center border border-line-strong px-7 text-2xs font-semibold tracking-button text-ink transition-colors hover:bg-surface-cream"
             >
-              EXPLORE DEPARTMENTS
+              SHOP BY STYLE
             </Link>
           </div>
         </div>
@@ -57,7 +57,7 @@ export default function Hero() {
         <div className="group relative min-h-[420px] overflow-hidden bg-placeholder md:min-h-[560px]">
           <Image
             src="/images/hero-campaign.jpg"
-            alt="Meridian winter collection"
+            alt="Leather boots from the Meridian Autumn/Winter collection"
             fill
             priority
             sizes="(max-width: 1024px) 100vw, 50vw"
@@ -70,11 +70,11 @@ export default function Hero() {
             </p>
 
             <h2 className="font-display text-4xl">
-              The Winter House
+              The Winter Boot
             </h2>
 
             <Link
-              href="#winter-house"
+              href="#winter-boot"
               className="mt-5 inline-block border-b border-white pb-2 text-xs tracking-button"
             >
               SHOP THE EDIT →
@@ -87,7 +87,7 @@ export default function Hero() {
       <Suspense fallback={<section className="bg-surface-cream py-14 md:py-28" />}>
         <TheEditSection />
       </Suspense>
-      <WinterHouse />
+      <WinterBoot />
       <Benefits />
 
     </main>

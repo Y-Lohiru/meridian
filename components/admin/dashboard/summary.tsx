@@ -1,8 +1,8 @@
 'use client';
 
 import SummaryCard from "./summaryCards";
-import {getMonthlyRevenue} from "../../app/utils/queries/admin";
-import {getOrders} from "../../app/utils/queries/admin";
+import {getMonthlyRevenue} from "../../../app/utils/queries/admin";
+import {getOrders} from "../../../app/utils/queries/admin";
 import { getPendingOrders } from "@/app/utils/queries/admin";
 import React from "react";
 import orders from "./orders";
