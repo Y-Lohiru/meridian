@@ -5,10 +5,14 @@ import {
 } from "@/components/product detail/types/product";
 import { createClient } from "@/app/utils/supabase/server";
 import { cookies } from "next/headers";
+import { connection } from "next/server";
 
 export async function getProducts(filters: ProductFilters): Promise<Product[]> {
+  // Supabase checks the session with Date.now(), so wait for a real request.
+  // Kept outside the try so Next.js's prerender signal isn't logged as a DB error.
+  await connection();
+  const cookieStore = await cookies();
   try {
-    const cookieStore = await cookies();
     const supabase = createClient(cookieStore);
 
     // Target the singular 'product' table from your schema
@@ -106,8 +110,11 @@ export async function getProducts(filters: ProductFilters): Promise<Product[]> {
 }
 
 export async function getProductById(id: string): Promise<Product | null> {
+  // Supabase checks the session with Date.now(), so wait for a real request.
+  // Kept outside the try so Next.js's prerender signal isn't logged as a DB error.
+  await connection();
+  const cookieStore = await cookies();
   try {
-    const cookieStore = await cookies();
     const supabase = createClient(cookieStore);
 
     const { data, error } = await supabase
@@ -133,8 +140,11 @@ export async function getProductById(id: string): Promise<Product | null> {
 export async function getProductReviews(
   productId: string,
 ): Promise<ProductReview[]> {
+  // Supabase checks the session with Date.now(), so wait for a real request.
+  // Kept outside the try so Next.js's prerender signal isn't logged as a DB error.
+  await connection();
+  const cookieStore = await cookies();
   try {
-    const cookieStore = await cookies();
     const supabase = createClient(cookieStore);
 
     const { data, error } = await supabase
