@@ -17,12 +17,12 @@ export default function CartDrawer() {
     syncCartToDatabase,
   } = usecart();
 
-  if (!isCartOpen) return null;
   const router = useRouter();
-
   const [isProceeding, setIsProceeding] = useState(false);
-
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
+
+  // Hooks above always run; only now is it safe to bail out
+  if (!isCartOpen) return null;
 
   const handleProceedToCheckout = async () => {
     if (isProceeding || cartItems.length === 0) return;
