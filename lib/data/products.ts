@@ -3,6 +3,7 @@ import {
   ProductFilters,
   ProductReview,
 } from "@/components/product detail/types/product";
+import { connection } from "next/server";
 import { createClient } from "@/app/utils/supabase/server";
 import { cookies } from "next/headers";
 
