@@ -10,7 +10,7 @@ export default function WinterBoot() {
       {/* Image */}
       <div className="relative aspect-[5/4] overflow-hidden bg-placeholder">
         <Image
-          src="/images/winter-boot.jpg"
+          src="/Boots-ladies.jpg"
           alt="Goodyear-welted leather boots from The Winter Boot collection"
           fill
           sizes="(max-width: 1024px) 100vw, 50vw"

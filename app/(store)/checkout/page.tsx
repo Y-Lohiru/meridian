@@ -1,9 +1,7 @@
 "use client";
-import React, { useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import CheckoutForm from "@/components/checkout/CheckoutForm";
-import { CartProvider } from "@/components/checkout/CartContent";
-import CartDrawer from "@/components/checkout/CartDrawer";
 import { usecart } from "@/components/checkout/CartContent";
 
 export default function CheckoutPage() {

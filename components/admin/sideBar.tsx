@@ -10,14 +10,16 @@ import { IoBagOutline } from "react-icons/io5";
 import { BsBoxSeam } from "react-icons/bs";
 import SignOutButton from "./auth/signOutButton";
 
-export default function SideBar() {
+export default function SideBar({ name }: { name: string }) {
   const pathname = usePathname();
 
   // Highlight the link for the page currently open
   function linkClass(href: string) {
     const active = pathname === href;
     return `flex items-center px-3 py-2 text-sm rounded-md gap-3 whitespace-nowrap transition-colors ${
-      active ? "bg-white text-brand font-semibold" : "text-white/85 hover:bg-white/10"
+      active
+        ? "bg-white text-brand font-semibold"
+        : "text-white/85 hover:bg-white/10"
     }`;
   }
 
@@ -26,7 +28,9 @@ export default function SideBar() {
       <LogoText />
 
       <div className="text-white font-display">
-        <span className="hidden md:block px-3 mt-8 mb-2 text-[10px] font-medium uppercase tracking-[0.2em] text-white/60">Store</span>
+        <span className="hidden md:block px-3 mt-8 mb-2 text-[10px] font-medium uppercase tracking-[0.2em] text-white/60">
+          Store
+        </span>
         <ul className="flex flex-row md:flex-col gap-1 mt-3 md:mt-0 overflow-x-auto scrollbar-none">
           <li>
             <Link href={"/admin"} className={linkClass("/admin")}>
@@ -41,7 +45,10 @@ export default function SideBar() {
             </Link>
           </li>
           <li>
-            <Link href={"/admin/products"} className={linkClass("/admin/products")}>
+            <Link
+              href={"/admin/products"}
+              className={linkClass("/admin/products")}
+            >
               <BsBoxSeam className="size-4" />
               Products
             </Link>
@@ -55,11 +62,9 @@ export default function SideBar() {
       </div>
 
       <div className="flex flex-row items-center justify-between md:block mt-3 md:mt-auto border-t border-white/15 pt-3 md:pt-4">
-        <ProfileIcon />
+        <ProfileIcon name={name} />
         <SignOutButton />
       </div>
-
-
     </aside>
   );
 }

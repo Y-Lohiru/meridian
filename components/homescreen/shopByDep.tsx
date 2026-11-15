@@ -3,12 +3,12 @@ import Link from "next/link";
 
 // Shoe categories — names match the `category` values stored in the database
 const categories = [
-  { name: "Boots", image: "/images/boots.jpg" },
-  { name: "Loafers", image: "/images/loafers.jpg" },
-  { name: "Formal", image: "/images/formal.jpg" },
-  { name: "Sneakers", image: "/images/sneakers.jpg" },
-  { name: "Heels", image: "/images/heels.jpg" },
-  { name: "Sandals", image: "/images/sandals.jpg" },
+  { name: "Boots", image: "/boots.jpg" },
+  { name: "Loafers", image: "/loafers.jpg" },
+  { name: "Formal", image: "/formal.jpg" },
+  { name: "Sneakers", image: "/sneakers.jpg" },
+  { name: "Heels", image: "/heels.jpg" },
+  { name: "Sandals", image: "/sandals.jpg" },
 ];
 
 export default function ShopByDepartment() {

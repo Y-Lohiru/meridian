@@ -4,8 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import type { Product } from "@/components/product detail/types/product";
 
-// Shoe categories stored in the database
-const shoeCategories = ["Boots", "Loafers", "Formal", "Sneakers", "Heels", "Sandals"];
+import { SHOE_CATEGORIES as shoeCategories } from "@/lib/data/shoeOptions";
 
 const categories = ["All", ...shoeCategories];
 

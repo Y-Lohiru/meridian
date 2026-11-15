@@ -2,14 +2,11 @@
 import React, { useEffect } from 'react'
 import ProfileIcon from '../admin/profileIcon'
 import ProfileLink from './ProfileLink'
-import RecentOrder from '../admin/dashboard/recentOrder'
 import checkUser from '@/app/utils/auth';
 import { createClient } from '@/app/utils/supabase/client';
 import { redirect } from 'next/navigation';
 import Order from './Order';
 import Button from '../checkout/Button';
-import SignOutButton from '../admin/auth/signOutButton';
-import { LogOut } from 'lucide-react';
 
 interface Profile {
     id:string;

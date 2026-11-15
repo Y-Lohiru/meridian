@@ -1,7 +1,7 @@
 // components/Product page/ProductPurchaseSection.tsx
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { Product, ProductVariant } from "./types/product";
 import ProductInfo from "./productInfo";
 import { usecart } from "@/components/checkout/CartContent";

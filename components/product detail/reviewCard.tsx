@@ -1,5 +1,4 @@
 // components/Product page/ReviewCard.tsx
-import React from "react";
 import { ProductReview } from "./types/product";
 
 interface ReviewCardProps {

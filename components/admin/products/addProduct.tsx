@@ -2,31 +2,19 @@
 import { addProduct, uploadProductImage } from "@/app/utils/queries/admin";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-
-// Same colors the products table has swatches for
-const colors = [
-  "Black",
-  "Brass",
-  "Burgundy",
-  "Charcoal",
-  "Chestnut",
-  "Cognac",
-  "Emerald",
-  "Gold",
-  "Natural",
-  "Navy",
-  "Oak",
-  "Off-white",
-  "Sand",
-  "Smoked",
-  "Tobacco",
-];
+import {
+  SHOE_CATEGORIES,
+  SHOE_COLORS,
+  SHOE_MATERIALS,
+  SHOE_SIZE,
+} from "@/lib/data/shoeOptions";
 
 export default function AddProductsForm() {
   const [productName, setProductName] = useState("");
   const [price, setPrice] = useState(0);
   const [quantity, setQuantity] = useState(0);
   const [material, setMaterial] = useState("");
+  const [sizes, setSizes] = useState<number[]>([]);
   const [color, setColor] = useState("");
   const [category, setCategory] = useState("");
   const [image_file, setImageFile] = useState<File | null>(null);
@@ -35,12 +23,21 @@ export default function AddProductsForm() {
 
   const router = useRouter();
 
+  function toggleSize(s: number) {
+    setSizes((prev) =>
+      prev.includes(s)
+        ? prev.filter((x) => x !== s)
+        : [...prev, s].sort((a, b) => a - b),
+    );
+  }
+
   const isComplete =
     productName.trim() !== "" &&
     material.trim() !== "" &&
     category !== "" &&
     color !== "" &&
     price > 0 &&
+    sizes.length > 0 &&
     quantity >= 0 &&
     image_file !== null;
 
@@ -63,6 +60,7 @@ export default function AddProductsForm() {
         material,
         color,
         image_url,
+        variants: sizes.map((s) => ({ label: `EU ${s}`, price })),
       });
 
       if (added) {
@@ -108,7 +106,7 @@ export default function AddProductsForm() {
             onChange={(e) => setProductName(e.target.value)}
             id="name"
             type="text"
-            placeholder="e.g. Leather chelsea boot"
+            placeholder="e.g. Chelsea boot in waxed calfskin"
             className={inputClass}
           ></input>
         </div>
@@ -125,7 +123,7 @@ export default function AddProductsForm() {
             min={0}
             className={inputClass}
           ></input>
-          <p className={helpClass}>How many you have ready to sell.</p>
+          <p className={helpClass}>How many pairs you have ready to sell.</p>
         </div>
 
         <div className="flex flex-col gap-2">
@@ -152,14 +150,22 @@ export default function AddProductsForm() {
           <label htmlFor="material" className={labelClass}>
             Material
           </label>
-          <input
+          <select
             value={material}
             onChange={(e) => setMaterial(e.target.value)}
             id="material"
-            type="text"
-            placeholder="e.g. Full-grain leather"
+            name="material"
+            required
             className={inputClass}
-          ></input>
+          >
+            <option value="">Select a material</option>
+            {SHOE_MATERIALS.map((m) => (
+              <option key={m} value={m}>
+                {m}
+              </option>
+            ))}
+          </select>
+          <p className={helpClass}>The main upper material.</p>
         </div>
 
         <div className="flex flex-col gap-2">
@@ -175,9 +181,9 @@ export default function AddProductsForm() {
             className={inputClass}
           >
             <option value="">Select a color</option>
-            {colors.map((c) => (
-              <option key={c} value={c}>
-                {c}
+            {SHOE_COLORS.map((c) => (
+              <option key={c.name} value={c.name}>
+                {c.name}
               </option>
             ))}
           </select>
@@ -196,13 +202,37 @@ export default function AddProductsForm() {
             className={inputClass}
           >
             <option value="">Select a category</option>
-            <option value="Formal">Formal</option>
-            <option value="Boots">Boots</option>
-            <option value="Loafers">Loafers</option>
-            <option value="Sneakers">Sneakers</option>
-            <option value="Heels">Heels</option>
-            <option value="Sandals">Sandals</option>
+            {SHOE_CATEGORIES.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
           </select>
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <span className={labelClass}>Sizes</span>
+          <div className="flex flex-wrap gap-2">
+            {SHOE_SIZE.map((s) => {
+              const selected = sizes.includes(s);
+              return (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => toggleSize(s)}
+                  aria-pressed={selected}
+                  className={`h-10 w-14 rounded-md border text-sm ${
+                    selected
+                      ? "border-brand bg-brand text-on-brand"
+                      : "border-line-strong bg-white text-ink hover:bg-surface-admin"
+                  }`}
+                >
+                  {s}
+                </button>
+              );
+            })}
+          </div>
+          <p className={helpClass}>Select every EU size this shoe comes in.</p>
         </div>
       </section>
 
